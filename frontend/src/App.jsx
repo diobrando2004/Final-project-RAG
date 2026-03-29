@@ -37,7 +37,12 @@ export default function App() {
       const res = await sendChat(query, selectedSources);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: res.answer, table: res.table || null },
+        {
+          role: "assistant",
+          content: res.answer,
+          table: res.table || null,
+          sources: res.sources || [],
+        },
       ]);
     } catch (err) {
       setMessages((prev) => [

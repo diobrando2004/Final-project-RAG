@@ -32,3 +32,4 @@ documents/
 # --- Personal/Source Documents ---
 *.pdf
 *.xlsx
+requirements_full.txt

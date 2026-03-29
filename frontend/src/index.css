@@ -526,3 +526,119 @@ html, body, #root {
   color: var(--text-muted);
   flex-shrink: 0;
 }
+/* ── Sources panel ─────────────────────────────────────────────────── */
+.sources-panel {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.sources-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  padding: 0 2px;
+}
+
+.sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.source-doc {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.source-doc-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  background: var(--bg-raised);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+  text-align: left;
+}
+.source-doc-btn:hover,
+.source-doc-btn.open {
+  background: var(--bg-hover);
+}
+
+.source-doc-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.source-doc-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-doc-count {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.source-doc-arrow {
+  font-size: 9px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+.source-doc-chunks {
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.source-chunk {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+.source-chunk:last-child {
+  border-bottom: none;
+}
+
+.source-chunk-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.source-chunk-ellipsis {
+  color: var(--text-muted);
+}
+
+.source-chunk-toggle {
+  margin-top: 6px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition);
+}
+.source-chunk-toggle:hover {
+  opacity: 0.75;
+}

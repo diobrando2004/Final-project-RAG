@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function DataTable({ rows }) {
   if (!rows || rows.length === 0) return null;
@@ -21,6 +21,66 @@ function DataTable({ rows }) {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+function ChunkItem({ chunk }) {
+  const [expanded, setExpanded] = useState(false);
+  const preview = chunk.slice(0, 200);
+  const hasMore = chunk.length > 200;
+
+  return (
+    <div className="source-chunk">
+      <p className="source-chunk-text">
+        {expanded ? chunk : preview}
+        {hasMore && !expanded && <span className="source-chunk-ellipsis">…</span>}
+      </p>
+      {hasMore && (
+        <button
+          className="source-chunk-toggle"
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function SourcesPanel({ sources }) {
+  const [openDoc, setOpenDoc] = useState(null);
+
+  if (!sources || sources.length === 0) return null;
+
+  return (
+    <div className="sources-panel">
+      <div className="sources-label">Sources</div>
+      <div className="sources-list">
+        {sources.map((src) => {
+          const isOpen = openDoc === src.name;
+          return (
+            <div key={src.name} className="source-doc">
+              <button
+                className={`source-doc-btn ${isOpen ? "open" : ""}`}
+                onClick={() => setOpenDoc(isOpen ? null : src.name)}
+              >
+                <span className="source-doc-icon">📄</span>
+                <span className="source-doc-name">{src.name}</span>
+                <span className="source-doc-count">{src.chunks.length} chunk{src.chunks.length !== 1 ? "s" : ""}</span>
+                <span className="source-doc-arrow">{isOpen ? "▲" : "▼"}</span>
+              </button>
+              {isOpen && (
+                <div className="source-doc-chunks">
+                  {src.chunks.map((chunk, i) => (
+                    <ChunkItem key={i} chunk={chunk} />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -87,6 +147,9 @@ export default function ChatPanel({ messages, thinking, selectedSources, onSend 
             <div className="message-bubble">{msg.content}</div>
             {msg.role === "assistant" && msg.table && (
               <DataTable rows={msg.table} />
+            )}
+            {msg.role === "assistant" && msg.sources?.length > 0 && (
+              <SourcesPanel sources={msg.sources} />
             )}
           </div>
         ))}

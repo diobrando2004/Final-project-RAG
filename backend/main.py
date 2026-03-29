@@ -124,9 +124,14 @@ class RAGExecutor:
             for doc in results
             if doc.metadata.get("parent_id")
         })
+        raw_parents = self.retriever.parent_store.load_content_many(parent_ids)
         context_text = self.retriever.retrieve_parent_many(parent_ids)
         print(f"PDF context: {len(context_text)} chars")
- 
+        source_map: dict[str, list[str]] = {}
+        for p in raw_parents:
+            name = p.get("metadata", {}).get("source", "unknown")
+            source_map.setdefault(name, []).append(p.get("content", "").strip())
+        sources = [{"name": k, "chunks": v} for k, v in source_map.items()]
         response = self.llm.create_chat_completion(
             messages=[
                 {
@@ -150,7 +155,7 @@ class RAGExecutor:
             top_p=0.9,
             repeat_penalty=1.2
         )
-        return response["choices"][0]["message"]["content"], None
+        return response["choices"][0]["message"]["content"], None, sources
  
     def _ask_csv(self, query: str, table_source: str) -> tuple:
         if table_source:
@@ -175,15 +180,16 @@ class RAGExecutor:
         else:
             table = None
  
-        return summary, table
+        return summary, table, []
 
     def _ask_combined(self, query: str, matched: list[dict]) -> tuple:
         context_parts = []
+        pdf_sources_structured = []
         csv_only = all(e["file_type"] == "csv" for e in matched)
         if csv_only:
             answers, all_tables = [], []
             for entry in matched:
-                answer, table = self._ask_csv(query, entry["source"])
+                answer, table, _ = self._ask_csv(query, entry["source"])
                 if answer and "couldn't find" not in answer and "Error" not in answer:
                     answers.append(f"[{entry['source']}]: {answer}")
                 if table:
@@ -199,12 +205,18 @@ class RAGExecutor:
                     for doc in entry["results"]
                     if doc.metadata.get("parent_id")
                 })
+                raw_parents = self.retriever.parent_store.load_content_many(parent_ids)
                 pdf_context = self.retriever.retrieve_parent_many(parent_ids)
                 if pdf_context:
                     source_label = entry["source"] or "document"
                     context_parts.append(
                         f"[From document '{source_label}']:\n{pdf_context}"
                     )
+                    chunks = [p.get("content", "").strip() for p in raw_parents]
+                    pdf_sources_structured.append({
+                        "name": source_label,
+                        "chunks": chunks
+                    })
  
             elif entry["file_type"] == "csv":
                 csv_context = self.csv_pipeline.try_get_csv_context(
@@ -243,7 +255,7 @@ class RAGExecutor:
             top_p=0.9,
             repeat_penalty=1.2
         )
-        return response["choices"][0]["message"]["content"], None
+        return response["choices"][0]["message"]["content"], None, pdf_sources_structured
 
     def startup_ingest(self):
         all_files = []
@@ -319,9 +331,13 @@ class ChatRequest(BaseModel):
     query: str
     sources: list[str] = ["Auto/All"]
 
+class SourceChunks(BaseModel):
+    name: str
+    chunks: list[str]
 class ChatResponse(BaseModel):
     answer: str
     table: list | None = None
+    sources: list[SourceChunks] = []
 
 class DocumentInfo(BaseModel):
     name: str
@@ -337,8 +353,8 @@ class DeleteResponse(BaseModel):
 def chat(req: ChatRequest):
     if not req.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
-    answer, table = executor.ask(req.query, req.sources)
-    return ChatResponse(answer=answer, table=table)
+    answer, table, sources = executor.ask(req.query, req.sources)
+    return ChatResponse(answer=answer, table=table, sources=sources)
 
 
 @app.get("/documents", response_model=list[DocumentInfo])
