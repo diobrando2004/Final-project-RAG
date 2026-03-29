@@ -1,0 +1,18 @@
+services:
+  rag-app:
+    build: .
+    container_name: local_rag_deploy
+    ports:
+      - "7860:7860"
+    volumes:
+      # Format -> Host_Folder : Container_Folder
+      - ./qdrant_db:/app/qdrant_db
+      - ./parent_store_sqlite:/app/parent_store_sqlite
+      - ./markdown_docs:/app/markdown_docs
+      - ./documents:/app/documents
+      - ./liquidAI rag:/app/liquidAI rag
+    deploy:
+      resources:
+        limits:
+          memory: 4G 
+    restart: unless-stopped

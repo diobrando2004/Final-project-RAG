@@ -1,0 +1,42 @@
+# --- Large Model Directories ---
+liquidAI rag/
+Qwen3-1.7B-GGUF/
+Qwen3-4B-GGUF/
+Qwen3-VL-4B-Instruct-GGUF/
+phi4-mini-instruct/
+llama.cpp/
+
+# --- Databases & Persistent Storage ---
+qdrant_db/
+parent_store_sqlite/
+chroma_index*/
+database/
+table_index_dir/
+metadata_cache/
+
+# --- Document & Markdown Caches ---
+markdown/
+markdown_docs/
+offload_dir/
+documents/
+oldFiles/
+test/
+csv to test/
+excel file test/
+tryToMakeRAGWork/
+
+# --- Python & Environment Clutter ---
+venv/
+venv_old/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# --- System & Development Files ---
+.git/
+.dockerignore
+.vscode/
+.idea/
+.DS_Store

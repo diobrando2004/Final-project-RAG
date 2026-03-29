@@ -1,0 +1,29 @@
+# --- UI & Server ---
+gradio==6.6.0
+fastapi==0.129.0
+uvicorn==0.38.0
+python-multipart==0.0.22
+# --- LLM Engine (CPU Optimized) ---
+llama-cpp-python==0.3.16
+pandas==2.3.3
+scipy==1.16.3
+numpy==2.3.5
+# --- Document Parsing & Layout ---
+PyMuPDF==1.27.1
+pymupdf-layout==1.27.1
+pymupdf4llm==0.3.4
+onnxruntime==1.23.2
+# --- Vector Database & LangChain Integration ---
+langchain==1.1.0
+qdrant-client==1.17.0
+langchain-core==1.1.0
+langchain-community==0.4.1
+fastembed==0.7.4
+
+# --- Text Splitting & Embeddings ---
+langchain-qdrant==1.1.0
+langchain-text-splitters==1.0.0
+langchain-huggingface==1.1.0
+sentence-transformers==5.1.2
+
+duckdb==1.4.4
