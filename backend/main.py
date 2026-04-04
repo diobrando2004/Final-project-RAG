@@ -64,15 +64,7 @@ class RAGExecutor:
 
             if not rewritten or len(rewritten) > len(query) * 3:
                 return query
-            original_words = set(query.lower().split())
-            new_words = set(rewritten.lower().split()) - original_words
-            stop_words = {"a", "an", "the", "is", "are", "was", "were", "what",
-                          "how", "when", "where", "who", "which", "do", "does",
-                          "did", "in", "on", "of", "to", "for", "and", "or"}
-            added_content_words = new_words - stop_words
-            if len(added_content_words) > 2:
-                print(f"Rewrite rejected — added new content words: {added_content_words}")
-                return query
+            
             print(f"Query rewritten: '{query}' -> '{rewritten}'")
             return rewritten
         except Exception as e:
