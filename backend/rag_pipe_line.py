@@ -348,6 +348,7 @@ class RAGPipeline:
                 fields = ", ".join(f"{col}={val}" for col, val in row.items())
                 rows.append(f"Row {i}: {fields}")
             data_context = f"{len(result)} row(s) found:\n" + "\n".join(rows)
+        self.ai.llm.reset()
         response = self.ai.llm.create_chat_completion(
             messages=[
                 {

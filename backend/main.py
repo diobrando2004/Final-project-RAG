@@ -32,10 +32,59 @@ class RAGExecutor:
             db=self.doc_manager.csv_db
         )
 
+    def _rewrite_query(self, query: str) -> str:
+        try:
+            response = self.llm.create_chat_completion(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a search query optimizer. "
+                            "Rewrite the user's question to be clearer and more specific "
+                            "without changing its meaning or adding new information.\n"
+                            "Rules:\n"
+                            "- Expand abbreviations and pronouns only if their meaning is explicitly stated.\n"
+                            "- Do NOT add any information, tools, names, or context not present in the original.\n"
+                            "- Do NOT answer the question.\n"
+                            "- Do NOT assume what software, product, or domain the user means.\n"
+                            "- If the question is already clear, return it unchanged.\n"
+                            "- Output ONLY the rewritten question. No explanation, no preamble."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": query
+                    }
+                ],
+                max_tokens=80,
+                temperature=0.0,
+                stop=["<|endoftext|>", "\n\n"]
+            )
+            rewritten = response["choices"][0]["message"]["content"].strip()
+
+            if not rewritten or len(rewritten) > len(query) * 3:
+                return query
+            original_words = set(query.lower().split())
+            new_words = set(rewritten.lower().split()) - original_words
+            stop_words = {"a", "an", "the", "is", "are", "was", "were", "what",
+                          "how", "when", "where", "who", "which", "do", "does",
+                          "did", "in", "on", "of", "to", "for", "and", "or"}
+            added_content_words = new_words - stop_words
+            if len(added_content_words) > 2:
+                print(f"Rewrite rejected — added new content words: {added_content_words}")
+                return query
+            print(f"Query rewritten: '{query}' -> '{rewritten}'")
+            return rewritten
+        except Exception as e:
+            print(f"Query rewrite failed, using original: {e}")
+            return query
+        
     def ask(self, query: str, source_filters: list[str] = None) -> tuple:
         self.llm.reset()
         print(f"\n--- Query: {query} ---")
- 
+        query = self._rewrite_query(query)
+        print(f"new query: {query}")
+        self.llm.reset()
         if not source_filters:
             source_filters = ["Auto/All"]
         is_auto = source_filters == ["Auto/All"] or "Auto/All" in source_filters
@@ -132,6 +181,7 @@ class RAGExecutor:
             name = p.get("metadata", {}).get("source", "unknown")
             source_map.setdefault(name, []).append(p.get("content", "").strip())
         sources = [{"name": k, "chunks": v} for k, v in source_map.items()]
+        self.llm.reset()
         response = self.llm.create_chat_completion(
             messages=[
                 {
@@ -149,7 +199,7 @@ class RAGExecutor:
                     "content": f"CONTEXT:\n{context_text}\n\nQUESTION:\n{query}"
                 }
             ],
-            max_tokens=500,
+            max_tokens=800,
             stop=["<|endoftext|>"],
             temperature=0.1,
             top_p=0.9,
@@ -200,7 +250,7 @@ class RAGExecutor:
             return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, []
  
         # --- MAP: generate one answer per source independently ---
-        sub_answers = []  # list of (label, answer_text)
+        sub_answers = []
         all_tables = []
  
         for entry in matched:
@@ -232,7 +282,7 @@ class RAGExecutor:
             f"[{label}]:\n{answer}" for label, answer in sub_answers
         )
         print(f"REDUCE: combining {len(sub_answers)} sub-answers")
- 
+        self.llm.reset()
         response = self.llm.create_chat_completion(
             messages=[
                 {
@@ -258,7 +308,7 @@ class RAGExecutor:
                     )
                 }
             ],
-            max_tokens=500,
+            max_tokens=800,
             stop=["<|endoftext|>"],
             temperature=0.1,
             top_p=0.9,
