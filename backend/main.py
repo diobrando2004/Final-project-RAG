@@ -183,8 +183,9 @@ class RAGExecutor:
         return summary, table, []
 
     def _ask_combined(self, query: str, matched: list[dict]) -> tuple:
-        context_parts = []
         pdf_sources_structured = []
+ 
+        # --- csv_only fast path (unchanged) ---
         csv_only = all(e["file_type"] == "csv" for e in matched)
         if csv_only:
             answers, all_tables = [], []
@@ -195,58 +196,66 @@ class RAGExecutor:
                 if table:
                     all_tables.append(table)
             if not answers:
-                return "I couldn't find any relevant information.", None
-            return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None
+                return "I couldn't find any relevant information.", None, []
+            return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, []
+ 
+        # --- MAP: generate one answer per source independently ---
+        sub_answers = []  # list of (label, answer_text)
+        all_tables = []
  
         for entry in matched:
             if entry["file_type"] == "pdf" and entry["results"]:
-                parent_ids = list({
-                    doc.metadata.get("parent_id")
-                    for doc in entry["results"]
-                    if doc.metadata.get("parent_id")
-                })
-                raw_parents = self.retriever.parent_store.load_content_many(parent_ids)
-                pdf_context = self.retriever.retrieve_parent_many(parent_ids)
-                if pdf_context:
-                    source_label = entry["source"] or "document"
-                    context_parts.append(
-                        f"[From document '{source_label}']:\n{pdf_context}"
-                    )
-                    chunks = [p.get("content", "").strip() for p in raw_parents]
-                    pdf_sources_structured.append({
-                        "name": source_label,
-                        "chunks": chunks
-                    })
+                answer, _, sources = self._ask_pdf(query, results=entry["results"])
+                pdf_sources_structured.extend(sources)
+                if answer and "couldn't find" not in answer.lower():
+                    label = entry["source"] or "document"
+                    sub_answers.append((label, answer))
+                    print(f"MAP pdf '{label}': {len(answer)} chars")
  
             elif entry["file_type"] == "csv":
-                csv_context = self.csv_pipeline.try_get_csv_context(
-                    query, entry["source"]
-                )
-                if csv_context:
-                    context_parts.append(csv_context)
+                answer, table, _ = self._ask_csv(query, entry["source"])
+                if answer and "couldn't find" not in answer.lower():
+                    sub_answers.append((entry["source"], answer))
+                    print(f"MAP csv '{entry['source']}': {len(answer)} chars")
+                if table:
+                    all_tables.append(table)
  
-        if not context_parts:
-            return "I couldn't find any relevant information.", None
+        if not sub_answers:
+            return "I couldn't find any relevant information.", None, pdf_sources_structured
  
-        combined_context = "\n\n---\n\n".join(context_parts)
-        print(f"Combined context: {len(combined_context)} chars from {len(context_parts)} source(s) {combined_context}")
+        # If only one source produced a useful answer, return it directly
+        if len(sub_answers) == 1:
+            return sub_answers[0][1], all_tables[0] if all_tables else None, pdf_sources_structured
+ 
+        # --- REDUCE: combine the sub-answers into one final answer ---
+        sub_context = "\n\n".join(
+            f"[{label}]:\n{answer}" for label, answer in sub_answers
+        )
+        print(f"REDUCE: combining {len(sub_answers)} sub-answers")
  
         response = self.llm.create_chat_completion(
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "You are a helpful assistant. Answer the question using ONLY the context.\n"
-                        "The context may contain both document text and structured data rows.\n"
-                        "Output the answer as plain text. Do not use markdown code blocks.\n"
-                        "Do not explain your reasoning or mention the context.\n"
-                        "If the answer is not in the context, respond with exactly: I don't know.\n"
-                        "Do not repeat yourself."
+                        "You are a helpful assistant. You are given several partial answers "
+                        "to the same question, each from a different source.\n"
+                        "Your job is to combine them into one clear, concise answer.\n"
+                        "Rules:\n"
+                        "- Do not repeat information that appears in multiple answers.\n"
+                        "- Do not mention the source labels.\n"
+                        "- Output plain text only. No markdown, no code blocks.\n"
+                        "- If the answers contradict each other, include both perspectives.\n"
+                        "- Do not repeat yourself."
                     )
                 },
                 {
                     "role": "user",
-                    "content": f"CONTEXT:\n{combined_context}\n\nQUESTION:\n{query}"
+                    "content": (
+                        f"QUESTION:\n{query}\n\n"
+                        f"PARTIAL ANSWERS:\n{sub_context}\n\n"
+                        "Combined answer:"
+                    )
                 }
             ],
             max_tokens=500,
@@ -255,7 +264,8 @@ class RAGExecutor:
             top_p=0.9,
             repeat_penalty=1.2
         )
-        return response["choices"][0]["message"]["content"], None, pdf_sources_structured
+        final = response["choices"][0]["message"]["content"].strip()
+        return final, all_tables[0] if len(all_tables) == 1 else None, pdf_sources_structured
 
     def startup_ingest(self):
         all_files = []
