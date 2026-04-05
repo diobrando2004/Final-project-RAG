@@ -23,6 +23,12 @@ class DocumentManager:
         self.csv_indexer = SemanticIndexer(
             self.rag_system.embedder, config.CSV_TABLE_INDEX_DIR
         )
+        self._child_collection = self.rag_system.vector_db.get_collection(
+            self.rag_system.collection_name
+        )
+        self._summary_collection = self.rag_system.vector_db.get_collection(
+            self.rag_system.summary_collection_name
+        )
         self._spatial_loaded = False
         self._setup_csv_db()
     def _setup_csv_db(self):
@@ -79,10 +85,8 @@ class DocumentManager:
         return "This table contains " + summary
 
     def _save_to_qdrant_summary(self, source_name: str, summary: str, file_type: str):
-        summary_store = self.rag_system.vector_db.get_collection(
-            self.rag_system.summary_collection_name
-        )
-        summary_store.add_texts(
+        
+        self._summary_collection.add_texts(
             texts=[summary],
             metadatas=[{"source": source_name, "file_type": file_type}]
         )
@@ -163,10 +167,8 @@ class DocumentManager:
         self._save_to_qdrant_summary(doc_name, doc_summary, file_type="pdf")
  
         parent_chunks, child_chunks = self.rag_system.chunker.create_chunks_single(md_path)
-        child_collection = self.rag_system.vector_db.get_collection(
-            self.rag_system.collection_name
-        )
-        child_collection.add_documents(child_chunks)
+
+        self._child_collection.add_documents(child_chunks)
         self.rag_system.parent_store.save_multiple(parent_chunks)
  
         print(f"Ingested PDF: '{doc_name}'")
