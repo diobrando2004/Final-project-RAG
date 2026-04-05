@@ -1,7 +1,7 @@
 from pathlib import Path
 import shutil
 import config
-from pdfs_to_md import pdfs_to_markdowns, pdf_to_markdown
+from pdfs_to_md import pdfs_to_markdowns, pdf_to_markdown, docx_to_markdown
 import re
 import logging
 import sqlite3
@@ -10,7 +10,7 @@ from indexer import SemanticIndexer
 logger = logging.getLogger(__name__)
 
  
-PDF_EXTENSIONS = {".pdf", ".md"}
+PDF_EXTENSIONS = {".pdf", ".md", ".docx"}
 CSV_EXTENSIONS = {".csv", ".xlsx", ".xls"}
 class DocumentManager:
     def __init__(self,rag_system):
@@ -144,6 +144,8 @@ class DocumentManager:
  
         if Path(doc_path).suffix.lower() == ".md":
             shutil.copy(doc_path, md_path)
+        elif Path(doc_path).suffix.lower() == ".docx":
+            docx_to_markdown(str(doc_path), self.md_dir)
         else:
             pdfs_to_markdowns(str(doc_path), overwrite=False)
  

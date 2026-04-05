@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { uploadDocuments, deleteDocument } from "../api";
 
-const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls"];
+const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls","docx"];
 
 export default function Sidebar({ docs, sources, selectedSources, onSourcesChange, onDocsChanged }) {
   const fileInputRef = useRef(null);

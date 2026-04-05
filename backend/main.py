@@ -5,7 +5,7 @@ import config
 
 from pathlib import Path
 from contextlib import asynccontextmanager
-
+import logging
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -15,7 +15,7 @@ from document_manager import DocumentManager
 from retrieval import Retrieval, filter_by_score
 from rag_pipe_line import RAGPipeline
 
-
+logger = logging.getLogger(__name__)
 class RAGExecutor:
     def __init__(self):
         self.rag = RAGsystem()
@@ -405,22 +405,34 @@ class DeleteResponse(BaseModel):
 def chat(req: ChatRequest):
     if not req.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty.")
-    answer, table, sources = executor.ask(req.query, req.sources)
-    return ChatResponse(answer=answer, table=table, sources=sources)
+    if len(req.query) > 2000:
+        raise HTTPException(status_code=400, detail="Query is too long (max 2000 characters).")
+    try:
+        answer, table, sources = executor.ask(req.query, req.sources)
+        return ChatResponse(answer=answer, table=table, sources=sources)
+    except Exception as e:
+        logger.error(f"Chat error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Something went wrong while generating the answer. Please try again.")
 
 
 @app.get("/documents", response_model=list[DocumentInfo])
 def list_documents():
-    docs = executor.doc_manager.list_documents()
-    return [
-        DocumentInfo(name=d["name"], summary=d["summary"], file_type=d.get("file_type", "pdf"))
-        for d in docs
-    ]
-
+    try:
+        docs = executor.doc_manager.list_documents()
+        return [
+            DocumentInfo(name=d["name"], summary=d["summary"], file_type=d.get("file_type", "pdf"))
+            for d in docs
+        ]
+    except Exception as e:
+        logger.error(f"Failed to list documents: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to load document list.")
+    
+MAX_UPLOAD_MB = 50
+MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
 
 @app.post("/documents/upload")
 async def upload_documents(files: list[UploadFile] = File(...)):
-    pdf_extensions = {".pdf", ".md"}
+    pdf_extensions = {".pdf", ".md", ".docx"}
     csv_extensions = {".csv", ".xlsx", ".xls"}
     allowed = pdf_extensions | csv_extensions
     saved_paths = []
@@ -435,34 +447,62 @@ async def upload_documents(files: list[UploadFile] = File(...)):
                     "Allowed: PDF, Markdown, CSV, Excel."
                 )
             )
+        contents = await file.read()
+        if len(contents) > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"'{file.filename}' exceeds the {MAX_UPLOAD_MB}MB size limit."
+            )
         dest_dir = config.CSV_DIR if suffix in csv_extensions else config.DOCUMENTS_DIR
         dest = Path(dest_dir) / file.filename
-        with open(dest, "wb") as f:
-            shutil.copyfileobj(file.file, f)
-        saved_paths.append(str(dest))
- 
-    added, skipped = executor.doc_manager.add_documents(saved_paths)
-    return {
-        "added": added,
-        "skipped": skipped,
-        "message": f"{added} document(s) added, {skipped} skipped (already existed)."
-    }
+        try:
+            with open(dest, "wb") as f:
+                f.write(contents)
+            saved_paths.append(str(dest))
+        except Exception as e:
+            logger.error(f"Failed to save uploaded file '{file.filename}': {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to save '{file.filename}'.")
+    try:
+        added, skipped = executor.doc_manager.add_documents(saved_paths)
+        return {
+            "added": added,
+            "skipped": skipped,
+            "message": f"{added} document(s) added, {skipped} skipped (already existed)."
+        }
+    except Exception as e:
+        logger.error(f"Ingestion error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Files were saved but ingestion failed. Check server logs.")
 
 
 @app.delete("/documents/{doc_name}", response_model=DeleteResponse)
 def delete_document(doc_name: str):
-    status = executor.doc_manager.delete_document(doc_name)
-    return DeleteResponse(status=status)
+    if not doc_name.strip():
+        raise HTTPException(status_code=400, detail="Document name cannot be empty.")
+    try:
+        status = executor.doc_manager.delete_document(doc_name)
+        return DeleteResponse(status=status)
+    except Exception as e:
+        logger.error(f"Delete error for '{doc_name}': {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to delete '{doc_name}'.")
 
 
 @app.get("/sources")
 def get_sources():
-    pdf_sources = list(executor.rag.vector_db.get_unique_sources(executor.rag.collection_name))
-    csv_sources = [
-        r[0] for r in executor.doc_manager.csv_db.safe_read(
-            "SELECT table_name FROM system_metadata ORDER BY table_name"
-        )
-    ]
+    try:
+        pdf_sources = list(executor.rag.vector_db.get_unique_sources(executor.rag.collection_name))
+    except Exception as e:
+        logger.error(f"Failed to fetch PDF sources: {e}")
+        pdf_sources = []
+    try:
+
+        csv_sources = [
+            r[0] for r in executor.doc_manager.csv_db.safe_read(
+                "SELECT table_name FROM system_metadata ORDER BY table_name"
+            )
+        ]
+    except Exception as e:
+        logger.error(f"Failed to fetch CSV sources: {e}")
+        csv_sources = []
     all_sources = sorted(set(pdf_sources + csv_sources))
     return {"sources": ["Auto/All"] + all_sources}
 
