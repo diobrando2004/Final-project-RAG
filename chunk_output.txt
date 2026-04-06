@@ -1,0 +1,1598 @@
+===== PARENT CHUNKS =====
+
+Parent ID: windowsMovieMaker_parent_0
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+# **Getting Started**  
+     
+Upon opening HD Movie Maker, the main page can be seen divided into 2 sections: **Movie**
+**project**, and **Quick tools** .  
+**Movie project** section provide functionalities to work with movie projects. You can create
+project from photos, videos and music. Projects can be saved for future changes and can be
+exported as video files.
+There a three main menu:  
+● **Create New Project** : to create a new movie project.
+● **Manage Projects** : to view, open and manage all of saved projects
+● **Recent Project** : to open the latest created/edited project.  
+**Note** : When you create a new project or open an exsisting project, you will be prompted to
+save or discard your previous working project if there are unsaved changes.  
+**Quick tools** section provide quick, simple, one-shot video editing tools. For more
+information on how to use quick tools, check out the Quick Tools section on the left.  
+**Create a new project**  
+Select **Create New Project** to create an empty project.
+The project menu includes:  
+--- end of page=0 ---  
+1. **Preview area** : to preview a clip in the project.
+2. **Clip toolbar** : contain the set of tools for selected clip. Depending on the type of the  
+clip (photo, video, title, credit), appropriate tools will show up.
+3. **Poject timeline** : contain the list of clips currently in your project.
+4. **Project toolbar** : provide actions you can do at the project level  
+○ **Add clip** : to add a new clip to the project.
+○ **Arrange clips** : to rearrange clips in the project.
+○ **Edit soundtrack** : to add/edit the soundtrack of the project.
+○ **Settings** : to change audio, video aspect ratio, and default effects settings for
+photos and video clips.
+○ **Save project** : to save project for future edits.
+○ **Save video** : to export your project as an output video file.  
+**Adding clips**  
+--- end of page=1 ---  
+Select **Add clip** if you want to add new video content to your project.  
+You can select position for the new clip: Current position, Begin of project, End of project.
+After that, select the type of clip you want to add:  
+● **Photo/Video** : to add a photo clip or a video clip
+● **Credit** : to add a credit
+● **Title** : to add a title  
+**Arranging clips**  
+There are two ways to change the clip’s position. If you want to move one clip to nearby
+position, you can just drag and drop the clip directly on the project timeline.
+If you need to move multiple clips at the same time, or you need to move a clip far away,
+you can use **Arrange clips** .  
+--- end of page=2 ---  
+● Select all the clips that needs to be repositioned.
+● Drag and drop them to the new position.
+● Select **OK** to apply changes. Select **Cancel** to discard all changes.  
+--- end of page=3 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_1
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+# **Working with Photo Clips**  
+     
+After adding a photo clip to your project, you can change the duration of the photo clip, apply
+certain effects to the photo clip, rotate the photo clip, and use some other editing functions.  
+● **Duration** : to set the duration of the photo.
+● **Transform** : to change the way the photo is presented (fit the screen, zoom to fill, with
+a frame).
+● **Transition** : to change the transition between clips.
+● **Motion** : to apply Ken Burnes effects to the photo.
+● **Rotate** : to rotate the photo 90 degrees clockwise.
+● **More tools** : include **Crop, enhance photo, Text overlay, Photo overlay,** and **All**
+**settings** .
+● **Delete** : to delete the clip.  
+**Change the duration of the photo**  
+You can change the duration of the photo in two ways: entering directly in the duration input
+box on the project toolbar, or using **All settings** page. The minimum duration is one second,
+and the maximum is 1200 seconds, which equals to 20 minutes.  
+**Tips** : If you use the **All settings** page, you can also set the same duration for all other
+photos in your project.  
+**Change the transform effect/transition/motion**  
+You can set transform, transition, and motion directly using the clip toolbar, or inside the **All**
+**settings** page.  
+--- end of page=4 ---  
+_**Using clip toolbar**_  
+● Select the photo clip.
+● From the clip toolbar, select the option ( **Transform/ Transition/ Motion** ).
+● From our selection of effects, select one.  
+_**Using All settings**_  
+● Select the photo clip.
+● From the clip toolbar, select **More tools → All settings**
+● To change transform effect, from the **General** tab, choose an effect you want, and
+change the specifications if needed.
+● To change transition, go to **Transition** tab, and select a transition effect you want.
+● To change motion, go to **Motion** tab, and select a motion effect you want  
+**Tips** : To apply one effect for all clips, select **Apply effect to all photos** in the **All settings**
+page. To randomize effects for all clips, select **Randomize effect for all photos**  
+**Rotate photo**  
+If your photo appears sideways or upside down, you can always rotate the photo using
+**Rotate** . Each time you press **Rotate**, the photo will be rotated 90 degrees clockwise.  
+**Crop, enhance photo**  
+Crop and enhance photo is the tool use to edit your photo. This includes cutting out
+unwanted areas on your photo (crop photo), or to apply enhancement filters to your photo
+(enhance photo)
+To open the tool, select **More tools → Crop, enhance photo**  
+**Crop photo**  
+--- end of page=5 ---  
+● Turn on the option **Crop Tool** (the default choice is on).
+● Select a ratio.
+● Drag the corners of the white frame or the whole frame to set crop area.
+● Select **OK** to save and go back, or select **Cancel** to discard all changes.  
+**Enhance photo**  
+● Turn on the option **Enhancement Effects** (the default choice is on).
+● Select an enhancement filter.
+● Adjust the parameters of the filter (if any).
+● Select **OK** to save and go back, or select **Cancel** to discard all changes.  
+--- end of page=6 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_2
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+# **Working with Video Clips**  
+     
+After adding a video clip in your project, you can change the volume of the video clip, apply
+certain effects to the video clip, split the video clip, trim the video clip, and use some other
+editing function.  
+● **Video clip volume** : to change the original sound of the video clip, ranging from 0x to
+2.0x.
+● **Transform** : to change the way the video is presented (fit the screen, zoom to fill, with
+a frame).
+● **Transition** : to change the transition between clips.
+● **Rotate** : to rotate the photo 90 degrees clockwise.
+● **More tools** : include **Split video, Trim video, Enhance video, Text overlay, Photo**
+**overlay, Sound overlay** and **All settings** .
+● **Delete** : to delete the clip.  
+**Change the clip volume**  
+You can change the volume of the video clip in two ways: using the **Video clip volume** slider
+in the clip toolbar, or using the **Video clip volume** slider in the **All settings** page.  
+**Change the transform effect/transition**  
+You can set transform and transition effect using the tools in the clip toolbar, or using the **All**
+**settings** page.  
+_**Using clip toolbar**_  
+--- end of page=7 ---  
+● Select the video clip.
+● From the clip toolbar, select the option ( **Transform/ Transition** ).
+● From our selection of effects, select one.  
+_**Using All settings**_  
+● Select the video clip.
+● From the clip toolbar, select **More tools → All settings**
+● To change transform effect, from the **General** tab, choose an effect you want, and
+change the specifications if needed.
+● To change transition, go to **Transition** tab, and select a transition effect you want.  
+**Rotate photo**  
+If your video appears sideways or upside down, you can always rotate the video using
+**Rotate** . Each time you press **Rotate**, the video will be rotated 90 degrees clockwise.  
+**Split video**  
+If you want to apply different effects on different parts of the video, you need to split the
+video into corresponding parts before applying the effects. To achieve this, you can use the
+**Split video** feature. To split the video:  
+● Select the video clip
+● From the clip toolbar, select **More tools → Split video** .
+● Drag the yellow cursor to the desired position
+● Press **Add splitter** . A splitter (splitter marks where the video is split) will be added at
+the cursor position.  
+**Notes:** Multiple splitters can be added.  
+--- end of page=8 ---  
+● Drag the splitter directly to the new position.  
+**Tips:** The **Time scale** slider can be used to change the time scale of the timeline which will
+help you change the splitter position more precisely.  
+● For more precision, press the **Backward** or **Forward** button to adjust the position of
+the splitter one frame forward/backward.  
+**Trim video**  
+When there are unwanted segments of the video, you can always cut them out by using the
+Trim video feature. To trim the video:  
+● Select the video clip
+● From the clip toolbar, select **More tools → Trim video** .
+● Drag the yellow cursor to the desired position.
+● Press **Add trimmers** to add a pair of trimmers at the yellow cursor position.  
+**Notes:** Multiple trimmers can be added.  
+● Drag the start or end trimmer, or the area between the trimmers to the appropriate
+position  
+**Tips:** The **Time scale** slider can be used to change the time scale of the timeline which will
+help you change the trimmers position more precisely.  
+● For precise changes of the trimmers, press the **Backward** or **Forward** button to
+adjust the position one frame forward/backward.  
+**Enhance video**  
+If you want to apply enhancement filters to your video, the **Enhance video** page is for you.  
+--- end of page=9 ---  
+● Select the video clip.
+● From the clip toolbar, select **More tools → Enhance video** .  
+● Click on **Add effect**, and choose one of the effects available.
+● Adjust the parameters as needed.
+● Click on the trash bin icon to delete the effect.
+● Select **Preview** to view the video.
+● Select **OK** to save and return, or select **Cancel** to discard all changes.  
+**Add sound overlay**  
+Sound overlay is used when you want to add short sound effects to your video.  
+● Select the video clip.
+● From the clip toolbar, select **More tools → Sound overlay** .
+● Select **Add Sound Clip** to add a sound clip.  
+--- end of page=10 ---  
+**Notes:** Multiple sound clips can be added.  
+● Click on **Select** and choose from our built-in list of sound effects, or choose **Browse**
+**audio file** in the **Select** menu to add your own sound effect.
+● You can change the start time of the sound clip in two ways: using the **Start time**
+slider, or dragging the musical note symbol on the clip timeline.
+● Click on the play button next to **Select** to play the sound.
+● Click on the trash bin icon to delete the sound.  
+**Change the speed of the video**  
+You can apply fast/slow motion effect in the **All settings** page. The minimum speed is
+0.125x and the maximum speed is 8.0x.  
+--- end of page=11 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_3
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+# **Working with Title and Credit**  
+     
+**Working with title**  
+Titles are used at the beginning of the project, or at the beginning of a new section in your
+project.  
+**Add title to project**  
+From the project toolbar, choose **Add clip → Title**  
+**Change duration**  
+You can change the duration of the title in two ways: entering directly in the duration input
+box on the project toolbar, or using **Edit title** page. The minimum duration is one second,
+and the maximum is 20 seconds.  
+**Add text**  
+● Click on **Add text**
+● Enter the text in the text box  
+**Note** : Multiple sections of text can be added.  
+**Edit text**  
+● Select the section of text
+● Change the text in the text box  
+**Format text**  
+● Select the section of text  
+--- end of page=12 ---  
+● Select an option to format the text (size, font, color, effect, background color,
+alignment, bold, italic, underline)  
+**Change the position of the text**  
+● Select the section of text
+● Drag the text to the target position on the preview area  
+**Change the appearance time of the text**  
+● Select the section of text
+● Drag the start or the end, or the area in between of the text timeline (the blue bar) to
+indicate the appearance time of the text.  
+**Change background color**  
+● Select one of the color from the background color selection
+● Click on the color wheel for more color customization  
+**Working with credits**  
+Credits are used to add credit roll at the end of your project  
+**Add credit to project**  
+From the project toolbar, choose **Add clip → Credit**  
+**Change duration**  
+You can change the duration of the credit in two ways: entering directly in the duration input
+box on the project toolbar, or using **Edit credit** page. The minimum duration is one second,
+and the maximum is 1200 seconds, which equals to 20 minutes.  
+--- end of page=13 ---  
+**Add text**  
+Enter the text in the text box  
+**Note** : The text will be automatically centered-aligned  
+**Format text**  
+Select an option to format the text (size, font, color, bold, italic)  
+**Change background color**  
+● Select one of the color from the background color selection
+● Click on the color wheel for more color customization  
+--- end of page=14 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_4
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+# **Photo Overlay**  
+     
+Photo overlay is the tool to add a photo/emoticon on top of the photo/video.
+To open the tool,  
+● Select the photo/video clip
+● From the clip toolbar, select **More tools → Photo overlay**  
+**Add emoticon**  
+● Click on **Add emoticon**
+● Choose one of our built-in emoticons  
+**Add photo**  
+● Click on **Add photo**
+● Choose a file from your device  
+**Tips:** Multiple photos/emoticons can be added.  
+**Change emoticon**  
+● Select the emoticon needed changing
+● Click on the smiley icon next to the name
+● Select one of our built-in emoticons  
+**Change photo**  
+● Select the photo needed changing
+● Click on the photo icon next to the name
+● Select the new photo file  
+--- end of page=15 ---  
+**Change the size of the photo/emoticon**  
+● Select the photo/emoticon
+● Drag the photo size slider to change the size  
+**Change the position of the photo/emoticon**  
+● Select the photo/emoticon
+● Drag and drop the photo/emoticon to the new position on the preview area  
+**Change the appearance time of the photo/emoticon**  
+1. For photos  
+○ Select the photo/emoticon
+○ Drag the start or the end, or the area in between of the photo timeline (the
+blue bar) to indicate the appearance time of the photo/emoticon.
+2. For videos  
+○ Select the photo/emoticon
+○ Drag the start or the end, or the area in between of the photo timeline (the
+blue bar) to indicate the appearance time of the photo/emoticon.
+○ For more precision while adjusting the start or the end of the timeline, use the
+**Backward/Forward** button to adjust them one frame backward/forward  
+**Tips:** Use the **Time scale** slider to change the time scale of the video timeline which will
+help to change the photo timeline more precisely.  
+--- end of page=16 ---
+
+# **Text Overlay**  
+     
+Text overlay is the tool to add text to the photo/video.
+To open the tool,  
+● Select the photo/video clip
+● From the clip toolbar, select **More tools → Text overlay**  
+**Add text**  
+● Click on **Add text**
+● Enter the text in the textbox  
+**Tips:** Multiple sections of text can be added.  
+**Edit text**  
+● Select the section of text
+● Change the text in the text box  
+**Format text**  
+● Select the section of text
+● Select an option to format the text (size, font, color, effect, background color,
+alignment, bold, italic, underline)  
+**Change the position of the text**  
+● Select the section of text
+● Drag the text to the target position on the preview area  
+**Change the appearance time of the text**  
+--- end of page=17 ---  
+1. For photos  
+○ Select the section of text
+○ Drag the start or the end, or the area in between of the text timeline (the blue
+bar) to indicate the appearance time of the text.
+2. For videos  
+○ Select the section of text
+○ Drag the start or the end, or the area in between of the text timeline (the blue
+bar) to indicate the appearance time of the text.
+○ For more precision while adjusting the start or the end of the timeline, use the
+**Backward/Forward** button to adjust them one frame backward/forward  
+**Tips:** Use the **Time scale** slider to change the time scale of the video timeline which will
+help to change the text timeline more precisely.  
+--- end of page=18 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_5
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+# **Working with Soundtrack Editor**  
+     
+The Sountrack editor is used to add and edit background music and voiceover in your
+project
+On the project toolbar, click on **Edit soundtrack** to open the soundtrack editor.  
+**Note:** The editor can only be opened if the project is not empty (at least 1 clip in the project).  
+**Tips:** It is best to work with the soundtrack after you’ve finnished working with the video
+track.  
+**Interface**  
+1. **Preview area**
+2. **Video track:** to view the list of simplified clips
+3. **Audio tracks**  
+○ **Music track:** the track for background music
+○ **Voice track:** the track for voice-over, narration, etc.
+4. **Cursors**  
+○ **Triangle cursor:** setting current position for audio editing
+○ **Round cursor:** making selection
+5. **Soundtrack editor toolbar**  
+○ **Back:** go back to Project page
+○ **Insert music:** add music to music track
+○ **Voice over:** add or record voice-over clip to voice track
+○ **Effect:** consist of adjust volume and fade in/fade out
+○ **Delay:** add delay time at the current position of the cursor.
+○ **Trim:** delete the selected audio
+○ **Clear soundtrack:** clear the soundtrack content or audio/music track
+○ **Undo:** undo the latest action  
+--- end of page=19 ---  
+○ **Play/Stop:** preview Project soundtrack.
+○ **Zoom-in/Zoom-out:** change the timescale displaying the soundtrack.  
+**Adding music**  
+● Set/drag the triangle cursor to the position you want to add
+● Press **Insert music** .  
+● Choose between adding a
+built-in music track or your own file  
+**Adding voice-over**  
+● Set/drag the triangle cursor to the position you want to add.
+● Press **Voice over** .  
+● To add a pre-recorded clip:
+○ Select **Insert voice clip**
+○ Choose a pre-recorded clips.
+● To record a voice-over:
+○ Choose **Record voice**
+○ Select **Record** to start recording
+○ Press **Stop** to stop recording
+○ Choose **Close** to close the recorder  
+--- end of page=20 ---  
+**Tips:** To avoid losing the first word in your recordings, you should wait around 1 second
+before speaking after you start recording. You can always trim the excess silence later on.  
+**Cursor manipulation and audio selection**  
+1. **Make a track active for editing**  
+○ Click on an audio track to make it active.
+2. **Note:** Only one track can be active at a time.
+3. **Set triangle cursor**  
+○ Click on the area above video track list to set the cursor.
+○ You can also drag it to a new position.
+4. **Make a selection**  
+○ Drag the round cursors to make a selection.
+○ Click on a video clip to make a selection on the active audio track
+corresponds to the time and duration of that video clip.
+○ Double click on an audio track to select the current segment of that audio
+track.
+5. **Tips:** For more precise selection, use the **Zoom-in** or **Zoom-out** buttons to  
+zoom-in/zoom-out of the display timescale.  
+**Editing features**  
+There are several things you can do to edit the selected segment of sound.  
+1. **Change the volume**  
+○ Select an audio segment
+○ Select **Effects → Volume**
+○ Drag the slider to adjust the sound.
+2. **Fade in/Fade out effect**  
+○ Select an audio segment
+○ Select **Effects → Fade-in** for fade in effect
+○ Select **Effects → Fade-out** for fade out effect
+3. **Delete segment**  
+○ Select an audio segment
+○ Select **Trim**
+4. **Note:** By selecting **Trim**, the audio segments after this position will move backward in  
+time.
+5. **Add a silence**  
+○ Set the triangle cursor to mark the beginning of the silence
+○ Select **Delay**
+○ Drag the cyan cursor or enter the time in the dialog pop-up to adjust the
+duration of the silence
+6. **Undo changes**  
+○ Select **Undo**
+7. **Preview**  
+○ Select **Play**
+8. **Clear tracks**  
+○ Select **Clear soundtrack → Clear music** to clear the music track  
+--- end of page=21 ---  
+○ Select **Clear soundtrack → Clear voice** to clear the voice track
+○ Select **Clear soundtrack → Clear all** to clear both tracks  
+--- end of page=22 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_6
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+# **Set Project Settings**  
+     
+If you want to change video aspect ratio or set default transition effect to video and photo
+clips, you can use Project Settings.  
+**Audio**  
+****
+****
+Check this option if you want to maintain synchronization between soundtrack and video
+track during preview. This is important if your soundtrack contains content such as voice
+narration which must be synchronized with video content.
+Note: this option may cause audio pause temporarily during project preview. This does not
+affect output video file when you Save video.  
+**Video aspect ratio**  
+****
+****
+When you create a new project, it will use the default aspect ratio of 16:9. You can change
+this setting if you want to create video with a different aspect ratio. For example you can
+select ratio of 1:1 for creating profile video, or ratio of 9:16 for Instagram videos.  
+**Transition**  
+--- end of page=23 ---  
+****
+****
+You can use this setting to set default transition effect for new photos and video clips that
+will be added to your project. This can also be used to set transition effect for all existing
+photos and video clips.
+There are two options:  
+● Random: new photos and video clips will be added with random transition effect.
+● Specific: new photos and video clips will be added with the selected effect from the
+list.  
+If you check Apply to all existing photos/videos, the selected option will also be applied to all
+photos/videos currently in your project when you press OK.  
+**Transform**  
+--- end of page=24 ---  
+****
+****
+You can use this setting to set default transform effect for new photos and video clips that
+will be added to your project. This can also be used to set transform effect for all existing
+photos and video clips.
+There are two options:  
+● Random: new photos and video clips will be added with random transform effect.
+● Specific: new photos and video clips will be added with the selected effect from the
+list.  
+If you check Apply to all existing photos/videos, the selected option will also be applied to all
+photos/videos currently in your project when you press OK.  
+**Photo duration**  
+****
+****
+Use this setting if you want to set default duration for new photos that will be added to your
+project. Also if you check Apply to all existing photos, the duration of all current photo clips in
+your project will be changed to the selected value.  
+**Photo motion**  
+--- end of page=25 ---  
+****
+****
+You can use this setting to set default motion effect for new photos will be added to your
+project. This can also be used to set transform effect for all existing photos.
+There are two options:  
+● Random: new photos will be added with random motion effect.
+● Specific: new photos will be added with the selected effect from the list.  
+If you check Apply to all existing photos, the selected option will also be applied to all photos
+currently in your project when you press OK.  
+--- end of page=26 ---
+================================================================================
+
+Parent ID: windowsMovieMaker_parent_7
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+# **Save Project and Save Video**  
+     
+**Save project**  
+Save project is for saving your project for future edits.  
+● From the project toolbar, select **Save project** .
+● Enter the project’s name.
+● Select **OK** .  
+**Note:** A project is NOT a video. Saved projects are stored in the app's Home Folder. It can
+only be opened by Movie Maker via the Manage Projects page and cannot be opened by
+any other app.  
+**Save video**  
+Save video is for exporting your project to a single output video file. You can select the
+location to store that output video file. You can also open it with virtually all video player
+software.  
+**Video encoding options**  
+--- end of page=27 ---  
+Video encoding options are paparameters related to your video's quality.  
+**Video resolution**  
+This is the resolution of the output video file. There are four options: WVGA (854x480), HD
+(1280x720), Full HD (1920x1080), and 4K (3840x2160).  
+Note:  
+● The 4K option is only supported with the Pro app license.
+● Quality of output video file will also depend on the quality of input video clips in your
+project.
+● If you want to make video with resolution of 4K and frame rate of 60 fps on Nvidia
+GPU, it is recommended to select the format of MP4 (HEVC/H265).  
+**Video frame rate**  
+This is the number of frame that will be rendered per second. Frame rate of 30 fps is
+standard for most normal consumer videos. You can select 60 fps for videos with very fast
+moving objects such as sport videos.  
+Note:  
+--- end of page=28 ---  
+● Quality of output video file will also depend on the quality of input video clips in your
+project.
+● If you want to make video with resolution of 4K and frame rate of 60 fps on Nvidia
+GPU, it is recommended to select the format of MP4 (HEVC/H265).  
+**Video format**  
+This option specify the format of the output video file and the corresponding video codec.
+Currently Movie Maker supports three formats: MP4 (H264), WMV (WVC1), and MP4
+(HEVC/H265).  
+**Video encoder**  
+This option specifies the video encoder to be used during video encoding process.  
+● Hardware encoder: GPU-based hardware accelerated video encoder will be used.
+The video encoding process will be faster but some rare issues may happen as
+noted below.
+● Software encoder: CPU-based video encoder will be used.  
+Note: video encoder troubleshooting  
+● Video encoding process fails or app crashes: this may happen if the graphics driver
+of your PC is not stable or corrupted. In this case you can try again with the Software
+encoder. However, we recommend you update your graphics driver before trying
+again. See the FAQ section on how to update graphics driver.
+● The color of output video file becomes over exposed: this may happen if your source
+video file was encoded with an incompatible color space. In this case, trying again
+with Software encoder will solve the problem.  
+**Video bitrate**  
+You can set video bitrate option if you want to limit the size of output video file. If bitrate is
+not set, the video encoder will automatically select a bitrate for you which is usually quite
+large.
+Note:  
+● Setting video bitrate is only supported with the Pro app license.
+● Setting higher bitrate may produce higher quality video. However it will result in larger
+file size, and actual video quality also depends on quality of the input video clips in
+your project.  
+--- end of page=29 ---
+================================================================================
+
+
+
+===== CHILD CHUNKS =====
+
+Child Index: 0
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+# **Getting Started**  
+     
+Upon opening HD Movie Maker, the main page can be seen divided into 2 sections: **Movie**
+**project**, and **Quick tools** .  
+**Movie project** section provide functionalities to work with movie projects. You can create
+project from photos, videos and music. Projects can be saved for future changes and can be
+exported as video files.
+There a three main menu:  
+● **Create New Project** : to create a new movie project.
+================================================================================
+
+Child Index: 1
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+There a three main menu:  
+● **Create New Project** : to create a new movie project.
+● **Manage Projects** : to view, open and manage all of saved projects
+● **Recent Project** : to open the latest created/edited project.  
+**Note** : When you create a new project or open an exsisting project, you will be prompted to
+save or discard your previous working project if there are unsaved changes.  
+**Quick tools** section provide quick, simple, one-shot video editing tools. For more
+================================================================================
+
+Child Index: 2
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+**Quick tools** section provide quick, simple, one-shot video editing tools. For more
+information on how to use quick tools, check out the Quick Tools section on the left.  
+**Create a new project**  
+Select **Create New Project** to create an empty project.
+The project menu includes:  
+--- end of page=0 ---  
+1. **Preview area** : to preview a clip in the project.
+2. **Clip toolbar** : contain the set of tools for selected clip. Depending on the type of the
+================================================================================
+
+Child Index: 3
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+2. **Clip toolbar** : contain the set of tools for selected clip. Depending on the type of the  
+clip (photo, video, title, credit), appropriate tools will show up.
+3. **Poject timeline** : contain the list of clips currently in your project.
+4. **Project toolbar** : provide actions you can do at the project level  
+○ **Add clip** : to add a new clip to the project.
+○ **Arrange clips** : to rearrange clips in the project.
+○ **Edit soundtrack** : to add/edit the soundtrack of the project.
+================================================================================
+
+Child Index: 4
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+○ **Edit soundtrack** : to add/edit the soundtrack of the project.
+○ **Settings** : to change audio, video aspect ratio, and default effects settings for
+photos and video clips.
+○ **Save project** : to save project for future edits.
+○ **Save video** : to export your project as an output video file.  
+**Adding clips**  
+--- end of page=1 ---  
+Select **Add clip** if you want to add new video content to your project.
+================================================================================
+
+Child Index: 5
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+--- end of page=1 ---  
+Select **Add clip** if you want to add new video content to your project.  
+You can select position for the new clip: Current position, Begin of project, End of project.
+After that, select the type of clip you want to add:  
+● **Photo/Video** : to add a photo clip or a video clip
+● **Credit** : to add a credit
+● **Title** : to add a title  
+**Arranging clips**  
+There are two ways to change the clip’s position. If you want to move one clip to nearby
+================================================================================
+
+Child Index: 6
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+There are two ways to change the clip’s position. If you want to move one clip to nearby
+position, you can just drag and drop the clip directly on the project timeline.
+If you need to move multiple clips at the same time, or you need to move a clip far away,
+you can use **Arrange clips** .  
+--- end of page=2 ---  
+● Select all the clips that needs to be repositioned.
+● Drag and drop them to the new position.
+● Select **OK** to apply changes. Select **Cancel** to discard all changes.
+================================================================================
+
+Child Index: 7
+Metadata: {'H1': '**Getting Started**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_0'}
+Content:
+● Select **OK** to apply changes. Select **Cancel** to discard all changes.  
+--- end of page=3 ---
+================================================================================
+
+Child Index: 8
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+# **Working with Photo Clips**  
+     
+After adding a photo clip to your project, you can change the duration of the photo clip, apply
+certain effects to the photo clip, rotate the photo clip, and use some other editing functions.  
+● **Duration** : to set the duration of the photo.
+● **Transform** : to change the way the photo is presented (fit the screen, zoom to fill, with
+a frame).
+● **Transition** : to change the transition between clips.
+================================================================================
+
+Child Index: 9
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+a frame).
+● **Transition** : to change the transition between clips.
+● **Motion** : to apply Ken Burnes effects to the photo.
+● **Rotate** : to rotate the photo 90 degrees clockwise.
+● **More tools** : include **Crop, enhance photo, Text overlay, Photo overlay,** and **All**
+**settings** .
+● **Delete** : to delete the clip.  
+**Change the duration of the photo**  
+You can change the duration of the photo in two ways: entering directly in the duration input
+================================================================================
+
+Child Index: 10
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+You can change the duration of the photo in two ways: entering directly in the duration input
+box on the project toolbar, or using **All settings** page. The minimum duration is one second,
+and the maximum is 1200 seconds, which equals to 20 minutes.  
+**Tips** : If you use the **All settings** page, you can also set the same duration for all other
+photos in your project.  
+**Change the transform effect/transition/motion**
+================================================================================
+
+Child Index: 11
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+photos in your project.  
+**Change the transform effect/transition/motion**  
+You can set transform, transition, and motion directly using the clip toolbar, or inside the **All**
+**settings** page.  
+--- end of page=4 ---  
+_**Using clip toolbar**_  
+● Select the photo clip.
+● From the clip toolbar, select the option ( **Transform/ Transition/ Motion** ).
+● From our selection of effects, select one.  
+_**Using All settings**_  
+● Select the photo clip.
+================================================================================
+
+Child Index: 12
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+● From our selection of effects, select one.  
+_**Using All settings**_  
+● Select the photo clip.
+● From the clip toolbar, select **More tools → All settings**
+● To change transform effect, from the **General** tab, choose an effect you want, and
+change the specifications if needed.
+● To change transition, go to **Transition** tab, and select a transition effect you want.
+● To change motion, go to **Motion** tab, and select a motion effect you want
+================================================================================
+
+Child Index: 13
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+● To change motion, go to **Motion** tab, and select a motion effect you want  
+**Tips** : To apply one effect for all clips, select **Apply effect to all photos** in the **All settings**
+page. To randomize effects for all clips, select **Randomize effect for all photos**  
+**Rotate photo**  
+If your photo appears sideways or upside down, you can always rotate the photo using
+**Rotate** . Each time you press **Rotate**, the photo will be rotated 90 degrees clockwise.  
+**Crop, enhance photo**
+================================================================================
+
+Child Index: 14
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+**Crop, enhance photo**  
+Crop and enhance photo is the tool use to edit your photo. This includes cutting out
+unwanted areas on your photo (crop photo), or to apply enhancement filters to your photo
+(enhance photo)
+To open the tool, select **More tools → Crop, enhance photo**  
+**Crop photo**  
+--- end of page=5 ---  
+● Turn on the option **Crop Tool** (the default choice is on).
+● Select a ratio.
+● Drag the corners of the white frame or the whole frame to set crop area.
+================================================================================
+
+Child Index: 15
+Metadata: {'H1': '**Working with Photo Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_1'}
+Content:
+● Select a ratio.
+● Drag the corners of the white frame or the whole frame to set crop area.
+● Select **OK** to save and go back, or select **Cancel** to discard all changes.  
+**Enhance photo**  
+● Turn on the option **Enhancement Effects** (the default choice is on).
+● Select an enhancement filter.
+● Adjust the parameters of the filter (if any).
+● Select **OK** to save and go back, or select **Cancel** to discard all changes.  
+--- end of page=6 ---
+================================================================================
+
+Child Index: 16
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+# **Working with Video Clips**  
+     
+After adding a video clip in your project, you can change the volume of the video clip, apply
+certain effects to the video clip, split the video clip, trim the video clip, and use some other
+editing function.  
+● **Video clip volume** : to change the original sound of the video clip, ranging from 0x to
+2.0x.
+● **Transform** : to change the way the video is presented (fit the screen, zoom to fill, with
+a frame).
+================================================================================
+
+Child Index: 17
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+a frame).
+● **Transition** : to change the transition between clips.
+● **Rotate** : to rotate the photo 90 degrees clockwise.
+● **More tools** : include **Split video, Trim video, Enhance video, Text overlay, Photo**
+**overlay, Sound overlay** and **All settings** .
+● **Delete** : to delete the clip.  
+**Change the clip volume**  
+You can change the volume of the video clip in two ways: using the **Video clip volume** slider
+================================================================================
+
+Child Index: 18
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+You can change the volume of the video clip in two ways: using the **Video clip volume** slider
+in the clip toolbar, or using the **Video clip volume** slider in the **All settings** page.  
+**Change the transform effect/transition**  
+You can set transform and transition effect using the tools in the clip toolbar, or using the **All**
+**settings** page.  
+_**Using clip toolbar**_  
+--- end of page=7 ---  
+● Select the video clip.
+================================================================================
+
+Child Index: 19
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+**settings** page.  
+_**Using clip toolbar**_  
+--- end of page=7 ---  
+● Select the video clip.
+● From the clip toolbar, select the option ( **Transform/ Transition** ).
+● From our selection of effects, select one.  
+_**Using All settings**_  
+● Select the video clip.
+● From the clip toolbar, select **More tools → All settings**
+● To change transform effect, from the **General** tab, choose an effect you want, and
+change the specifications if needed.
+================================================================================
+
+Child Index: 20
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+change the specifications if needed.
+● To change transition, go to **Transition** tab, and select a transition effect you want.  
+**Rotate photo**  
+If your video appears sideways or upside down, you can always rotate the video using
+**Rotate** . Each time you press **Rotate**, the video will be rotated 90 degrees clockwise.  
+**Split video**  
+If you want to apply different effects on different parts of the video, you need to split the
+================================================================================
+
+Child Index: 21
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+If you want to apply different effects on different parts of the video, you need to split the
+video into corresponding parts before applying the effects. To achieve this, you can use the
+**Split video** feature. To split the video:  
+● Select the video clip
+● From the clip toolbar, select **More tools → Split video** .
+● Drag the yellow cursor to the desired position
+● Press **Add splitter** . A splitter (splitter marks where the video is split) will be added at
+the cursor position.
+================================================================================
+
+Child Index: 22
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+the cursor position.  
+**Notes:** Multiple splitters can be added.  
+--- end of page=8 ---  
+● Drag the splitter directly to the new position.  
+**Tips:** The **Time scale** slider can be used to change the time scale of the timeline which will
+help you change the splitter position more precisely.  
+● For more precision, press the **Backward** or **Forward** button to adjust the position of
+the splitter one frame forward/backward.  
+**Trim video**
+================================================================================
+
+Child Index: 23
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+the splitter one frame forward/backward.  
+**Trim video**  
+When there are unwanted segments of the video, you can always cut them out by using the
+Trim video feature. To trim the video:  
+● Select the video clip
+● From the clip toolbar, select **More tools → Trim video** .
+● Drag the yellow cursor to the desired position.
+● Press **Add trimmers** to add a pair of trimmers at the yellow cursor position.  
+**Notes:** Multiple trimmers can be added.
+================================================================================
+
+Child Index: 24
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+**Notes:** Multiple trimmers can be added.  
+● Drag the start or end trimmer, or the area between the trimmers to the appropriate
+position  
+**Tips:** The **Time scale** slider can be used to change the time scale of the timeline which will
+help you change the trimmers position more precisely.  
+● For precise changes of the trimmers, press the **Backward** or **Forward** button to
+adjust the position one frame forward/backward.  
+**Enhance video**
+================================================================================
+
+Child Index: 25
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+adjust the position one frame forward/backward.  
+**Enhance video**  
+If you want to apply enhancement filters to your video, the **Enhance video** page is for you.  
+--- end of page=9 ---  
+● Select the video clip.
+● From the clip toolbar, select **More tools → Enhance video** .  
+● Click on **Add effect**, and choose one of the effects available.
+● Adjust the parameters as needed.
+● Click on the trash bin icon to delete the effect.
+● Select **Preview** to view the video.
+================================================================================
+
+Child Index: 26
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+● Click on the trash bin icon to delete the effect.
+● Select **Preview** to view the video.
+● Select **OK** to save and return, or select **Cancel** to discard all changes.  
+**Add sound overlay**  
+Sound overlay is used when you want to add short sound effects to your video.  
+● Select the video clip.
+● From the clip toolbar, select **More tools → Sound overlay** .
+● Select **Add Sound Clip** to add a sound clip.  
+--- end of page=10 ---  
+**Notes:** Multiple sound clips can be added.
+================================================================================
+
+Child Index: 27
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+--- end of page=10 ---  
+**Notes:** Multiple sound clips can be added.  
+● Click on **Select** and choose from our built-in list of sound effects, or choose **Browse**
+**audio file** in the **Select** menu to add your own sound effect.
+● You can change the start time of the sound clip in two ways: using the **Start time**
+slider, or dragging the musical note symbol on the clip timeline.
+● Click on the play button next to **Select** to play the sound.
+================================================================================
+
+Child Index: 28
+Metadata: {'H1': '**Working with Video Clips**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_2'}
+Content:
+● Click on the play button next to **Select** to play the sound.
+● Click on the trash bin icon to delete the sound.  
+**Change the speed of the video**  
+You can apply fast/slow motion effect in the **All settings** page. The minimum speed is
+0.125x and the maximum speed is 8.0x.  
+--- end of page=11 ---
+================================================================================
+
+Child Index: 29
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+# **Working with Title and Credit**  
+     
+**Working with title**  
+Titles are used at the beginning of the project, or at the beginning of a new section in your
+project.  
+**Add title to project**  
+From the project toolbar, choose **Add clip → Title**  
+**Change duration**  
+You can change the duration of the title in two ways: entering directly in the duration input
+box on the project toolbar, or using **Edit title** page. The minimum duration is one second,
+and the maximum is 20 seconds.
+================================================================================
+
+Child Index: 30
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+and the maximum is 20 seconds.  
+**Add text**  
+● Click on **Add text**
+● Enter the text in the text box  
+**Note** : Multiple sections of text can be added.  
+**Edit text**  
+● Select the section of text
+● Change the text in the text box  
+**Format text**  
+● Select the section of text  
+--- end of page=12 ---  
+● Select an option to format the text (size, font, color, effect, background color,
+alignment, bold, italic, underline)  
+**Change the position of the text**
+================================================================================
+
+Child Index: 31
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+alignment, bold, italic, underline)  
+**Change the position of the text**  
+● Select the section of text
+● Drag the text to the target position on the preview area  
+**Change the appearance time of the text**  
+● Select the section of text
+● Drag the start or the end, or the area in between of the text timeline (the blue bar) to
+indicate the appearance time of the text.  
+**Change background color**  
+● Select one of the color from the background color selection
+================================================================================
+
+Child Index: 32
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+**Change background color**  
+● Select one of the color from the background color selection
+● Click on the color wheel for more color customization  
+**Working with credits**  
+Credits are used to add credit roll at the end of your project  
+**Add credit to project**  
+From the project toolbar, choose **Add clip → Credit**  
+**Change duration**  
+You can change the duration of the credit in two ways: entering directly in the duration input
+================================================================================
+
+Child Index: 33
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+You can change the duration of the credit in two ways: entering directly in the duration input
+box on the project toolbar, or using **Edit credit** page. The minimum duration is one second,
+and the maximum is 1200 seconds, which equals to 20 minutes.  
+--- end of page=13 ---  
+**Add text**  
+Enter the text in the text box  
+**Note** : The text will be automatically centered-aligned  
+**Format text**  
+Select an option to format the text (size, font, color, bold, italic)
+================================================================================
+
+Child Index: 34
+Metadata: {'H1': '**Working with Title and Credit**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_3'}
+Content:
+**Format text**  
+Select an option to format the text (size, font, color, bold, italic)  
+**Change background color**  
+● Select one of the color from the background color selection
+● Click on the color wheel for more color customization  
+--- end of page=14 ---
+================================================================================
+
+Child Index: 35
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+# **Photo Overlay**  
+     
+Photo overlay is the tool to add a photo/emoticon on top of the photo/video.
+To open the tool,  
+● Select the photo/video clip
+● From the clip toolbar, select **More tools → Photo overlay**  
+**Add emoticon**  
+● Click on **Add emoticon**
+● Choose one of our built-in emoticons  
+**Add photo**  
+● Click on **Add photo**
+● Choose a file from your device  
+**Tips:** Multiple photos/emoticons can be added.  
+**Change emoticon**  
+● Select the emoticon needed changing
+================================================================================
+
+Child Index: 36
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+**Change emoticon**  
+● Select the emoticon needed changing
+● Click on the smiley icon next to the name
+● Select one of our built-in emoticons  
+**Change photo**  
+● Select the photo needed changing
+● Click on the photo icon next to the name
+● Select the new photo file  
+--- end of page=15 ---  
+**Change the size of the photo/emoticon**  
+● Select the photo/emoticon
+● Drag the photo size slider to change the size  
+**Change the position of the photo/emoticon**  
+● Select the photo/emoticon
+================================================================================
+
+Child Index: 37
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+**Change the position of the photo/emoticon**  
+● Select the photo/emoticon
+● Drag and drop the photo/emoticon to the new position on the preview area  
+**Change the appearance time of the photo/emoticon**  
+1. For photos  
+○ Select the photo/emoticon
+○ Drag the start or the end, or the area in between of the photo timeline (the
+blue bar) to indicate the appearance time of the photo/emoticon.
+2. For videos  
+○ Select the photo/emoticon
+================================================================================
+
+Child Index: 38
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+2. For videos  
+○ Select the photo/emoticon
+○ Drag the start or the end, or the area in between of the photo timeline (the
+blue bar) to indicate the appearance time of the photo/emoticon.
+○ For more precision while adjusting the start or the end of the timeline, use the
+**Backward/Forward** button to adjust them one frame backward/forward  
+**Tips:** Use the **Time scale** slider to change the time scale of the video timeline which will
+help to change the photo timeline more precisely.
+================================================================================
+
+Child Index: 39
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+help to change the photo timeline more precisely.  
+--- end of page=16 ---
+================================================================================
+
+Child Index: 40
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+# **Text Overlay**  
+     
+Text overlay is the tool to add text to the photo/video.
+To open the tool,  
+● Select the photo/video clip
+● From the clip toolbar, select **More tools → Text overlay**  
+**Add text**  
+● Click on **Add text**
+● Enter the text in the textbox  
+**Tips:** Multiple sections of text can be added.  
+**Edit text**  
+● Select the section of text
+● Change the text in the text box  
+**Format text**  
+● Select the section of text
+================================================================================
+
+Child Index: 41
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+● Change the text in the text box  
+**Format text**  
+● Select the section of text
+● Select an option to format the text (size, font, color, effect, background color,
+alignment, bold, italic, underline)  
+**Change the position of the text**  
+● Select the section of text
+● Drag the text to the target position on the preview area  
+**Change the appearance time of the text**  
+--- end of page=17 ---  
+1. For photos  
+○ Select the section of text
+================================================================================
+
+Child Index: 42
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+--- end of page=17 ---  
+1. For photos  
+○ Select the section of text
+○ Drag the start or the end, or the area in between of the text timeline (the blue
+bar) to indicate the appearance time of the text.
+2. For videos  
+○ Select the section of text
+○ Drag the start or the end, or the area in between of the text timeline (the blue
+bar) to indicate the appearance time of the text.
+○ For more precision while adjusting the start or the end of the timeline, use the
+================================================================================
+
+Child Index: 43
+Metadata: {'H1': '**Photo Overlay** -> **Text Overlay**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_4'}
+Content:
+○ For more precision while adjusting the start or the end of the timeline, use the
+**Backward/Forward** button to adjust them one frame backward/forward  
+**Tips:** Use the **Time scale** slider to change the time scale of the video timeline which will
+help to change the text timeline more precisely.  
+--- end of page=18 ---
+================================================================================
+
+Child Index: 44
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+# **Working with Soundtrack Editor**  
+     
+The Sountrack editor is used to add and edit background music and voiceover in your
+project
+On the project toolbar, click on **Edit soundtrack** to open the soundtrack editor.  
+**Note:** The editor can only be opened if the project is not empty (at least 1 clip in the project).  
+**Tips:** It is best to work with the soundtrack after you’ve finnished working with the video
+track.  
+**Interface**  
+1. **Preview area**
+================================================================================
+
+Child Index: 45
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+track.  
+**Interface**  
+1. **Preview area**
+2. **Video track:** to view the list of simplified clips
+3. **Audio tracks**  
+○ **Music track:** the track for background music
+○ **Voice track:** the track for voice-over, narration, etc.
+4. **Cursors**  
+○ **Triangle cursor:** setting current position for audio editing
+○ **Round cursor:** making selection
+5. **Soundtrack editor toolbar**  
+○ **Back:** go back to Project page
+○ **Insert music:** add music to music track
+================================================================================
+
+Child Index: 46
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+○ **Back:** go back to Project page
+○ **Insert music:** add music to music track
+○ **Voice over:** add or record voice-over clip to voice track
+○ **Effect:** consist of adjust volume and fade in/fade out
+○ **Delay:** add delay time at the current position of the cursor.
+○ **Trim:** delete the selected audio
+○ **Clear soundtrack:** clear the soundtrack content or audio/music track
+○ **Undo:** undo the latest action  
+--- end of page=19 ---  
+○ **Play/Stop:** preview Project soundtrack.
+================================================================================
+
+Child Index: 47
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+--- end of page=19 ---  
+○ **Play/Stop:** preview Project soundtrack.
+○ **Zoom-in/Zoom-out:** change the timescale displaying the soundtrack.  
+**Adding music**  
+● Set/drag the triangle cursor to the position you want to add
+● Press **Insert music** .  
+● Choose between adding a
+built-in music track or your own file  
+**Adding voice-over**  
+● Set/drag the triangle cursor to the position you want to add.
+● Press **Voice over** .  
+● To add a pre-recorded clip:
+○ Select **Insert voice clip**
+================================================================================
+
+Child Index: 48
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+● Press **Voice over** .  
+● To add a pre-recorded clip:
+○ Select **Insert voice clip**
+○ Choose a pre-recorded clips.
+● To record a voice-over:
+○ Choose **Record voice**
+○ Select **Record** to start recording
+○ Press **Stop** to stop recording
+○ Choose **Close** to close the recorder  
+--- end of page=20 ---  
+**Tips:** To avoid losing the first word in your recordings, you should wait around 1 second
+before speaking after you start recording. You can always trim the excess silence later on.
+================================================================================
+
+Child Index: 49
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+before speaking after you start recording. You can always trim the excess silence later on.  
+**Cursor manipulation and audio selection**  
+1. **Make a track active for editing**  
+○ Click on an audio track to make it active.
+2. **Note:** Only one track can be active at a time.
+3. **Set triangle cursor**  
+○ Click on the area above video track list to set the cursor.
+○ You can also drag it to a new position.
+4. **Make a selection**  
+○ Drag the round cursors to make a selection.
+================================================================================
+
+Child Index: 50
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+4. **Make a selection**  
+○ Drag the round cursors to make a selection.
+○ Click on a video clip to make a selection on the active audio track
+corresponds to the time and duration of that video clip.
+○ Double click on an audio track to select the current segment of that audio
+track.
+5. **Tips:** For more precise selection, use the **Zoom-in** or **Zoom-out** buttons to  
+zoom-in/zoom-out of the display timescale.  
+**Editing features**
+================================================================================
+
+Child Index: 51
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+zoom-in/zoom-out of the display timescale.  
+**Editing features**  
+There are several things you can do to edit the selected segment of sound.  
+1. **Change the volume**  
+○ Select an audio segment
+○ Select **Effects → Volume**
+○ Drag the slider to adjust the sound.
+2. **Fade in/Fade out effect**  
+○ Select an audio segment
+○ Select **Effects → Fade-in** for fade in effect
+○ Select **Effects → Fade-out** for fade out effect
+3. **Delete segment**  
+○ Select an audio segment
+○ Select **Trim**
+================================================================================
+
+Child Index: 52
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+3. **Delete segment**  
+○ Select an audio segment
+○ Select **Trim**
+4. **Note:** By selecting **Trim**, the audio segments after this position will move backward in  
+time.
+5. **Add a silence**  
+○ Set the triangle cursor to mark the beginning of the silence
+○ Select **Delay**
+○ Drag the cyan cursor or enter the time in the dialog pop-up to adjust the
+duration of the silence
+6. **Undo changes**  
+○ Select **Undo**
+7. **Preview**  
+○ Select **Play**
+8. **Clear tracks**
+================================================================================
+
+Child Index: 53
+Metadata: {'H1': '**Working with Soundtrack Editor**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_5'}
+Content:
+6. **Undo changes**  
+○ Select **Undo**
+7. **Preview**  
+○ Select **Play**
+8. **Clear tracks**  
+○ Select **Clear soundtrack → Clear music** to clear the music track  
+--- end of page=21 ---  
+○ Select **Clear soundtrack → Clear voice** to clear the voice track
+○ Select **Clear soundtrack → Clear all** to clear both tracks  
+--- end of page=22 ---
+================================================================================
+
+Child Index: 54
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+# **Set Project Settings**  
+     
+If you want to change video aspect ratio or set default transition effect to video and photo
+clips, you can use Project Settings.  
+**Audio**  
+****
+****
+Check this option if you want to maintain synchronization between soundtrack and video
+track during preview. This is important if your soundtrack contains content such as voice
+narration which must be synchronized with video content.
+================================================================================
+
+Child Index: 55
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+narration which must be synchronized with video content.
+Note: this option may cause audio pause temporarily during project preview. This does not
+affect output video file when you Save video.  
+**Video aspect ratio**  
+****
+****
+When you create a new project, it will use the default aspect ratio of 16:9. You can change
+this setting if you want to create video with a different aspect ratio. For example you can
+================================================================================
+
+Child Index: 56
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+this setting if you want to create video with a different aspect ratio. For example you can
+select ratio of 1:1 for creating profile video, or ratio of 9:16 for Instagram videos.  
+**Transition**  
+--- end of page=23 ---  
+****
+****
+You can use this setting to set default transition effect for new photos and video clips that
+will be added to your project. This can also be used to set transition effect for all existing
+photos and video clips.
+There are two options:
+================================================================================
+
+Child Index: 57
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+photos and video clips.
+There are two options:  
+● Random: new photos and video clips will be added with random transition effect.
+● Specific: new photos and video clips will be added with the selected effect from the
+list.  
+If you check Apply to all existing photos/videos, the selected option will also be applied to all
+photos/videos currently in your project when you press OK.  
+**Transform**  
+--- end of page=24 ---  
+****
+****
+================================================================================
+
+Child Index: 58
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+**Transform**  
+--- end of page=24 ---  
+****
+****
+You can use this setting to set default transform effect for new photos and video clips that
+will be added to your project. This can also be used to set transform effect for all existing
+photos and video clips.
+There are two options:  
+● Random: new photos and video clips will be added with random transform effect.
+● Specific: new photos and video clips will be added with the selected effect from the
+list.
+================================================================================
+
+Child Index: 59
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+● Specific: new photos and video clips will be added with the selected effect from the
+list.  
+If you check Apply to all existing photos/videos, the selected option will also be applied to all
+photos/videos currently in your project when you press OK.  
+**Photo duration**  
+****
+****
+Use this setting if you want to set default duration for new photos that will be added to your
+project. Also if you check Apply to all existing photos, the duration of all current photo clips in
+================================================================================
+
+Child Index: 60
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+project. Also if you check Apply to all existing photos, the duration of all current photo clips in
+your project will be changed to the selected value.  
+**Photo motion**  
+--- end of page=25 ---  
+****
+****
+You can use this setting to set default motion effect for new photos will be added to your
+project. This can also be used to set transform effect for all existing photos.
+There are two options:  
+● Random: new photos will be added with random motion effect.
+================================================================================
+
+Child Index: 61
+Metadata: {'H1': '**Set Project Settings**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_6'}
+Content:
+There are two options:  
+● Random: new photos will be added with random motion effect.
+● Specific: new photos will be added with the selected effect from the list.  
+If you check Apply to all existing photos, the selected option will also be applied to all photos
+currently in your project when you press OK.  
+--- end of page=26 ---
+================================================================================
+
+Child Index: 62
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+# **Save Project and Save Video**  
+     
+**Save project**  
+Save project is for saving your project for future edits.  
+● From the project toolbar, select **Save project** .
+● Enter the project’s name.
+● Select **OK** .  
+**Note:** A project is NOT a video. Saved projects are stored in the app's Home Folder. It can
+only be opened by Movie Maker via the Manage Projects page and cannot be opened by
+any other app.  
+**Save video**
+================================================================================
+
+Child Index: 63
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+any other app.  
+**Save video**  
+Save video is for exporting your project to a single output video file. You can select the
+location to store that output video file. You can also open it with virtually all video player
+software.  
+**Video encoding options**  
+--- end of page=27 ---  
+Video encoding options are paparameters related to your video's quality.  
+**Video resolution**  
+This is the resolution of the output video file. There are four options: WVGA (854x480), HD
+================================================================================
+
+Child Index: 64
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+This is the resolution of the output video file. There are four options: WVGA (854x480), HD
+(1280x720), Full HD (1920x1080), and 4K (3840x2160).  
+Note:  
+● The 4K option is only supported with the Pro app license.
+● Quality of output video file will also depend on the quality of input video clips in your
+project.
+● If you want to make video with resolution of 4K and frame rate of 60 fps on Nvidia
+GPU, it is recommended to select the format of MP4 (HEVC/H265).  
+**Video frame rate**
+================================================================================
+
+Child Index: 65
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+GPU, it is recommended to select the format of MP4 (HEVC/H265).  
+**Video frame rate**  
+This is the number of frame that will be rendered per second. Frame rate of 30 fps is
+standard for most normal consumer videos. You can select 60 fps for videos with very fast
+moving objects such as sport videos.  
+Note:  
+--- end of page=28 ---  
+● Quality of output video file will also depend on the quality of input video clips in your
+project.
+================================================================================
+
+Child Index: 66
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+project.
+● If you want to make video with resolution of 4K and frame rate of 60 fps on Nvidia
+GPU, it is recommended to select the format of MP4 (HEVC/H265).  
+**Video format**  
+This option specify the format of the output video file and the corresponding video codec.
+Currently Movie Maker supports three formats: MP4 (H264), WMV (WVC1), and MP4
+(HEVC/H265).  
+**Video encoder**  
+This option specifies the video encoder to be used during video encoding process.
+================================================================================
+
+Child Index: 67
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+This option specifies the video encoder to be used during video encoding process.  
+● Hardware encoder: GPU-based hardware accelerated video encoder will be used.
+The video encoding process will be faster but some rare issues may happen as
+noted below.
+● Software encoder: CPU-based video encoder will be used.  
+Note: video encoder troubleshooting  
+● Video encoding process fails or app crashes: this may happen if the graphics driver
+================================================================================
+
+Child Index: 68
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+● Video encoding process fails or app crashes: this may happen if the graphics driver
+of your PC is not stable or corrupted. In this case you can try again with the Software
+encoder. However, we recommend you update your graphics driver before trying
+again. See the FAQ section on how to update graphics driver.
+● The color of output video file becomes over exposed: this may happen if your source
+video file was encoded with an incompatible color space. In this case, trying again
+================================================================================
+
+Child Index: 69
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+video file was encoded with an incompatible color space. In this case, trying again
+with Software encoder will solve the problem.  
+**Video bitrate**  
+You can set video bitrate option if you want to limit the size of output video file. If bitrate is
+not set, the video encoder will automatically select a bitrate for you which is usually quite
+large.
+Note:  
+● Setting video bitrate is only supported with the Pro app license.
+================================================================================
+
+Child Index: 70
+Metadata: {'H1': '**Save Project and Save Video**', 'source': 'windowsMovieMaker.pdf', 'parent_id': 'windowsMovieMaker_parent_7'}
+Content:
+large.
+Note:  
+● Setting video bitrate is only supported with the Pro app license.
+● Setting higher bitrate may produce higher quality video. However it will result in larger
+file size, and actual video quality also depends on quality of the input video clips in
+your project.  
+--- end of page=29 ---
+================================================================================
+

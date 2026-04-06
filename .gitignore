@@ -1,35 +1,48 @@
-# --- AI Models & Binaries (The Heavy Stuff) ---
-models/
-phi4-mini-instruct/
-Qwen3-VL-4B-Instruct-GGUF/
-llama.cpp/
 
-# --- Database & Indices (Local State) ---
-qdrant_db/
-chroma_index/
-parent_store_sqlite/
-database/
-csv_metadata/
-csv_table_index/
-csv_data/
-csv to test/
-
-# --- Python & Environment ---
 __pycache__/
+*.pyc
+*.pyo
+.venv/
 venv/
 venv_old/
-*.py[cod]
-.env
+backend/models/
+backend/documents/
+backend/csv_data/
+backend/markdown_docs/
+backend/parent_store_sqlite/
+backend/qdrant_db/
+backend/csv_metadata/
+backend/csv_table_index/
+backend/database/
+llama.cpp/
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
 
-# --- Temporary & Archive Files ---
+# Misc
+.git/
+.gitignore
+*.md
 *.zip
-oldFiles/
-tryToMakeRAGWork/
-chunk_output.txt
-markdown_docs/
-documents/
-
 # --- Personal/Source Documents ---
 *.pdf
 *.xlsx
 requirements_full.txt
+document_manager.py
+prepareEnvironment.py
+
+models/
+documents/
+csv_data/
+markdown_docs/
+parent_store_sqlite/
+qdrant_db/
+csv_metadata/
+csv_table_index/
+database/
+phi4-mini-instruct/
+Qwen3-VL-4B-Instruct-GGUF/
+tryToMakeRAGWork/
+oldFiles/
+csv to test/
+chroma_index/
