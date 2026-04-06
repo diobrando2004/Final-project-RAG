@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const BASE = "http://localhost:8000";
+// In Docker, requests go through Nginx which proxies /api/ to the backend.
+// In local dev, point directly to the backend server.
+const BASE = import.meta.env.VITE_API_URL || "/api";
 
 export async function sendChat(query, sources = ["Auto/All"]) {
   const res = await axios.post(`${BASE}/chat`, { query, sources });
