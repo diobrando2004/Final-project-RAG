@@ -1,7 +1,6 @@
 import os
 import json
 import numpy as np
-from sentence_transformers import util
 
 SKIP_TABLES = {"system_metadata"}
 
@@ -41,8 +40,8 @@ class SemanticIndexer:
 
             if table_data:
                 texts = [f"{d['column']}: {d['value']}" for d in table_data]
-                embeddings = self.embedder.encode(texts, convert_to_tensor=True)
-                np.save(index_path, embeddings.cpu().numpy())
+                embeddings = np.array(list(self.embedder.embed(texts)))
+                np.save(index_path, embeddings)
                 with open(meta_path, "w") as f:
                     json.dump(table_data, f)
 
@@ -57,9 +56,11 @@ class SemanticIndexer:
         with open(meta_path, "r") as f:
             metadata = json.load(f)
 
-        query_emb = self.embedder.encode(user_query, convert_to_tensor=True)
-        scores = util.cos_sim(query_emb, embeddings)[0]
-        top_indices = np.argsort(-scores.cpu())[:3]
+        query_emb = np.array(list(self.embedder.embed([user_query])))
+        query_norm = query_emb / (np.linalg.norm(query_emb, axis=1, keepdims=True) + 1e-10)
+        emb_norm = embeddings / (np.linalg.norm(embeddings, axis=1, keepdims=True) + 1e-10)
+        scores = (query_norm @ emb_norm.T)[0]
+        top_indices = np.argsort(-scores)[:3]
 
         hints = "\nDATABASE HINTS (Matching values found):\n"
         found = False

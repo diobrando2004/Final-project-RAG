@@ -90,7 +90,7 @@ class RAGPipeline:
             description = self.ai.generate_description(table_name, snippet_str)
 
             print(f"Embedding description for '{table_name}'...")
-            vector = self.ai.embedder.encode(description).tolist()
+            vector = list(next(self.ai.embedder.embed([description])))
 
             self.db.execute(
                 "INSERT OR REPLACE INTO system_metadata VALUES (?, ?, ?)",
@@ -160,7 +160,7 @@ class RAGPipeline:
     def retrieve_relevant_table(self, user_query):
         print("Routing query via vector search...")
 
-        query_vector = self.ai.embedder.encode(user_query).tolist()
+        query_vector = list(next(self.ai.embedder.embed([user_query])))
 
         result = self.db.execute("""
             SELECT table_name,

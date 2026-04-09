@@ -5,7 +5,7 @@ from collection import Collection
 from chunker import Chunker
 from store_parents import ParentStore
 from llama_cpp import Llama
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 
 class RAGsystem:
@@ -24,7 +24,7 @@ class RAGsystem:
                 "Please add your model file and restart."
             )
 
-        self.embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        self.embedder = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
 
         self.llm = Llama(
             model_path=gguf_files[0],

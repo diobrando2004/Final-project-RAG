@@ -5,23 +5,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     git \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-ENV CMAKE_ARGS="-DGGML_BLAS=OFF -DGGML_CUDA=OFF"
+ENV CMAKE_ARGS="-DGGML_BLAS=OFF -DGGML_CUDA=OFF -DGGML_NATIVE=OFF -DGGML_AVX=ON"
 ENV FORCE_CMAKE=1
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────
 FROM python:3.11-slim
 
+# libgomp1 is a runtime dependency for llama-cpp-python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app/backend
 
-# Copy only installed packages, not build tools
-COPY --from=builder /install /usr/local
+# Copy only installed packages from builder — no build tools included
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY backend/ .
 
