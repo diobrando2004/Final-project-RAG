@@ -187,7 +187,7 @@ class RAGExecutor:
                 }
             ],
             max_tokens=800,
-            stop=["<|endoftext|>"],
+            stop=["<|endoftext|>", "<eos>"],
             temperature=0.1,
             top_p=0.9,
             repeat_penalty=1.2
@@ -296,7 +296,7 @@ class RAGExecutor:
                 }
             ],
             max_tokens=800,
-            stop=["<|endoftext|>"],
+            stop=["<|endoftext|>", "<eos>"],
             temperature=0.1,
             top_p=0.9,
             repeat_penalty=1.2
