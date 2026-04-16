@@ -219,9 +219,13 @@ class RAGPipeline:
     # ------------------------------------------------------------------
 
     def deduplicate_sql(self, sql):
+        sql = re.split(r'```', sql)[0].strip()
         sql = re.sub(r'(?i)WHERE\s+SELECT', 'WHERE', sql)
         for word in ["SELECT", "FROM", "WHERE"]:
             sql = re.sub(rf'\b({word})\s+\1\b', r'\1', sql, flags=re.IGNORECASE)
+        lines = sql.split('\n')
+        if len(lines) > 1 and lines[0].strip() == lines[1].strip():
+            sql = lines[0]
         return sql
 
     def generate_and_execute_sql(self, user_query, target_table_info):
@@ -270,6 +274,7 @@ class RAGPipeline:
         )
 
         generated_text = self.ai.generate_sql(prompt)
+        generated_text = generated_text.split("<eos>")[0].strip()
         clean_sql = f"{prefill} {generated_text}"
         clean_sql = self.deduplicate_sql(clean_sql)
 
@@ -372,7 +377,7 @@ class RAGPipeline:
             ],
             max_tokens=120,
             temperature=0.1,
-            stop=["<|im_end|>"]
+            stop=["<|im_end|>", "<eos>"]
         )
         return response["choices"][0]["message"]["content"].strip()
 

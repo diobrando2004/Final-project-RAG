@@ -25,7 +25,7 @@ class RAGsystem:
             )
 
         self.embedder = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
-
+        print(gguf_files)
         self.llm = Llama(
             model_path=gguf_files[0],
             n_ctx=config.LLM_N_CTX,
@@ -35,6 +35,7 @@ class RAGsystem:
             temperature=config.LLM_TEMPERATURE,
             top_p=0.9,
             verbose=False,
+            
         )
 
         self.vector_db.create_collection(self.collection_name)

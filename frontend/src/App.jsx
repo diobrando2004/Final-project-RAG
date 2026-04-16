@@ -32,9 +32,11 @@ export default function App() {
   async function handleSend(query) {
     setMessages((prev) => [...prev, { role: "user", content: query, table: null }]);
     setThinking(true);
+    const startTime = performance.now();
 
     try {
       const res = await sendChat(query, selectedSources);
+      const elapsed = (performance.now() - startTime) / 1000;
       setMessages((prev) => [
         ...prev,
         {
@@ -42,15 +44,18 @@ export default function App() {
           content: res.answer,
           table: res.table || null,
           sources: res.sources || [],
+          elapsed,
         },
       ]);
     } catch (err) {
+      const elapsed = (performance.now() - startTime) / 1000;
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           content: `Error: ${err.response?.data?.detail || err.message}`,
           table: null,
+          elapsed,
         },
       ]);
     } finally {

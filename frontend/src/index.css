@@ -642,3 +642,18 @@ html, body, #root {
 .source-chunk-toggle:hover {
   opacity: 0.75;
 }
+/* ── Timer ─────────────────────────────────────────────────────────── */
+.thinking-timer {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.message-elapsed {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 0 4px;
+  margin-top: 2px;
+}

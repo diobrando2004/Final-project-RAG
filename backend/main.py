@@ -39,17 +39,12 @@ class RAGExecutor:
                     {
                         "role": "system",
                         "content": (
-                            "You are a search query optimizer. "
-                            "Rewrite the user's question to be clearer and more specific "
-                            "without changing its meaning or adding new information.\n"
-                            "Rules:\n"
-                            "- Expand abbreviations and pronouns only if their meaning is explicitly stated.\n"
-                            "- Do NOT add any information, tools, names, or context not present in the original.\n"
-                            "- Do NOT answer the question.\n"
-                            "- Do NOT assume what software, product, or domain the user means.\n"
-                            "- If the question is already clear, return it unchanged.\n"
-                            "- Output ONLY the rewritten question. No explanation, no preamble."
-                        )
+                        "You are a spell checker. Fix ONLY spelling and grammar typos in the user's query. "
+                        "Do NOT rephrase, reword, expand, or change the meaning in any way. "
+                        "Do NOT add words, context, or clarifications. "
+                        "If there are no typos, return the query exactly as-is. "
+                        "Output ONLY the corrected query. Nothing else."
+                    )
                     },
                     {
                         "role": "user",
@@ -133,7 +128,7 @@ class RAGExecutor:
         for src in csv_sources:
             score_row = self.doc_manager.csv_db.safe_read(
                 "SELECT list_cosine_similarity(embedding, ?::FLOAT[]) FROM system_metadata WHERE table_name = ?",
-                [self.rag.embedder.encode(query).tolist(), src]
+                [list(self.rag.embedder.embed([query]))[0].tolist(), src]
             )
             score = score_row[0][0] if score_row and score_row[0][0] is not None else 0.0
             print(f"Pinned CSV '{src}' summary score: {score:.3f}")
@@ -205,7 +200,7 @@ class RAGExecutor:
         else:
             table_info = self.csv_pipeline.retrieve_relevant_table(query)
         if not table_info:
-            return "I couldn't find a relevant table for that question.", None
+            return "I couldn't find a relevant table for that question.", None, []
  
         result_data, sql_used = self.csv_pipeline.generate_and_execute_sql(
             query, table_info
@@ -213,7 +208,7 @@ class RAGExecutor:
         print(f"CSV SQL: {sql_used}")
  
         if isinstance(result_data, str) and result_data.startswith("Error"):
-            return self.csv_pipeline.synthesize(query, result=None, error=result_data), None
+            return self.csv_pipeline.synthesize(query, result=None, error=result_data), None, []
  
         summary = self.csv_pipeline.synthesize(query, result=result_data)
  
