@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Evaluation — gemma-4-E4B-it-Q4_K_M</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0e0f11; color: #e8eaf0; padding: 32px; }
+  h1 { font-size: 22px; color: #e8a045; margin-bottom: 4px; }
+  .meta { font-size: 13px; color: #8b909e; margin-bottom: 28px; }
+
+  .summary { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .card {
+    background: #16181c; border: 1px solid #2a2d35; border-radius: 8px;
+    padding: 16px 24px; min-width: 120px; text-align: center;
+  }
+  .card-label { font-size: 11px; color: #8b909e; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .card-value { font-size: 28px; font-weight: 700; }
+  .card-sub { font-size: 11px; color: #555a68; margin-top: 4px; }
+
+  .section-title {
+    font-size: 11px; color: #555a68; text-transform: uppercase;
+    letter-spacing: .1em; margin: 24px 0 10px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #1e2128; }
+  th {
+    padding: 10px 12px; text-align: left; color: #e8a045;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap; border-bottom: 1px solid #2a2d35;
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid #2a2d35; vertical-align: top; }
+  tr:not(.doc-separator):hover td { background: #1e2128; }
+  .idx { color: #555a68; width: 36px; }
+  .question { max-width: 180px; font-weight: 500; }
+  .answer { max-width: 240px; color: #8b909e; }
+  .chunks { max-width: 180px; }
+  .elapsed { color: #555a68; white-space: nowrap; }
+  .key-used { color: #555a68; font-size: 11px; white-space: nowrap; }
+  .explanation { max-width: 200px; color: #8b909e; font-size: 12px; }
+
+  details summary {
+    cursor: pointer; color: #e8a045; font-size: 12px;
+    font-family: monospace; user-select: none;
+  }
+  details pre {
+    margin-top: 6px; font-size: 11px; color: #555a68;
+    white-space: pre-wrap; word-break: break-word;
+    background: #0e0f11; padding: 8px; border-radius: 4px;
+    border: 1px solid #2a2d35; max-height: 200px; overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+  <h1>RAG Evaluation Report</h1>
+  <div class="meta">
+    Model: <strong>gemma-4-E4B-it-Q4_K_M</strong> &nbsp;|&nbsp;
+    2026-05-06 18:34 &nbsp;|&nbsp;
+    1 questions across 1 documents &nbsp;|&nbsp;
+    Judge: Gemini 2.0 Flash (4 key(s) rotating, reference-free)
+  </div>
+
+  <div class="section-title">Overall Metrics</div>
+  <div class="summary">
+    <div class="card">
+      <div class="card-label">Overall</div>
+      <div class="card-value" style="color:#4caf7d">9.8</div>
+      <div class="card-sub">all questions</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Accuracy</div>
+      <div class="card-value" style="color:#4caf7d">10.0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Completeness</div>
+      <div class="card-value" style="color:#4caf7d">9.0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Relevance</div>
+      <div class="card-value" style="color:#4caf7d">10.0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Conciseness</div>
+      <div class="card-value" style="color:#4caf7d">10.0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Avg Response</div>
+      <div class="card-value" style="color:#e8a045">165.4s</div>
+    </div>
+  </div>
+
+  <div class="section-title">Per-Document Scores</div>
+  <div class="summary">
+    
+        <div class="card">
+          <div class="card-label" style="color:#e05c8a">Dog Breeds Book</div>
+          <div class="card-value" style="color:#4caf7d">9.8</div>
+          <div class="card-sub">1 questions</div>
+        </div>
+  </div>
+
+  <div class="section-title">Results</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Question</th>
+          <th>RAG Answer</th>
+          <th>Retrieved Context</th>
+          <th>Accuracy</th>
+          <th>Completeness</th>
+          <th>Relevance</th>
+          <th>Conciseness</th>
+          <th>Overall</th>
+          <th>Time</th>
+          <th>Key</th>
+          <th>Judge Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#e05c8a;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ Dog Breeds Book
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">1</td>
+          <td class="question">What is unique about the Norwegian Lundehund's physical anatomy compared to other dog breeds, and what was it historically used for?</td>
+          <td class="answer">The Norwegian Lundehund is unique due to its six toes on each foot, prick ears that can fold closed backwards or forwards at will, and a distinctive ability to tip its head backward until it touches the backbone. Historically, this breed was used for wrestling and retrieving live Puffins from steep vertical cliff crevices.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## Kooikerhondje  
+**The Kooikerhondje is a Dutch breed stemming back to the 1500’s. They are also known as Dutch Decoy Dogs and were traditionally used to drive ducks into a trap where the hunter could easily get them. Their name comes from the hunter, who...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">9</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.8</td>
+          <td class="elapsed">165.4s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately identifies the specific anatomical traits and historical use of the Norwegian Lundehund as described in the source. It only misses the mention of the dog's exceptional range of motion in all its joints, which allows it to navigate narrow passages.</td>
+        </tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

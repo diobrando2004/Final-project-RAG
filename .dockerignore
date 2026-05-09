@@ -5,7 +5,7 @@ Qwen3-4B-GGUF/
 Qwen3-VL-4B-Instruct-GGUF/
 phi4-mini-instruct/
 llama.cpp/
-
+/backend/evaluation.py
 # --- Databases & Persistent Storage ---
 qdrant_db/
 parent_store_sqlite/

@@ -6,7 +6,6 @@ services:
     container_name: rag-backend
     restart: unless-stopped
     volumes:
-      # Persist data between restarts
       - ./models:/app/models
       - ./documents:/app/documents
       - ./csv_data:/app/csv_data
@@ -16,9 +15,10 @@ services:
       - ./csv_metadata:/app/csv_metadata
       - ./csv_table_index:/app/csv_table_index
       - ./database:/app/database
+      - ./hf_cache:/root/.cache/huggingface  
     environment:
       - PYTHONUNBUFFERED=1
-    # No ports exposed to host — only accessible via frontend proxy
+      - LLAMA_CPP_USE_MMAP=1
     expose:
       - "8000"
 
