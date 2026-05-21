@@ -32,3 +32,8 @@ export async function deleteDocument(docName) {
   const res = await axios.delete(`${BASE}/documents/${encodeURIComponent(docName)}`);
   return res.data.status;
 }
+
+export async function reindexDocument(docName) {
+  const res = await axios.post(`${BASE}/documents/${encodeURIComponent(docName)}/reindex`);
+  return res.data.status;
+}

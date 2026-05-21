@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { uploadDocuments, deleteDocument } from "../api";
+import { uploadDocuments, deleteDocument, reindexDocument } from "../api";
 
 const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls","docx"];
 
@@ -8,6 +8,7 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
   const [dragOver, setDragOver] = useState(false);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [reindexing, setReindexing] = useState(null); // doc name being reindexed
   const [status, setStatus] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -84,6 +85,20 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
       onDocsChanged();
     } catch (err) {
       setStatus(`Delete failed: ${err.response?.data?.detail || err.message}`);
+    }
+  }
+
+  async function handleReindex(docName) {
+    setReindexing(docName);
+    setStatus(`Reindexing "${docName}"…`);
+    try {
+      const msg = await reindexDocument(docName);
+      setStatus(msg);
+      onDocsChanged();
+    } catch (err) {
+      setStatus(`Reindex failed: ${err.response?.data?.detail || err.message}`);
+    } finally {
+      setReindexing(null);
     }
   }
 
@@ -184,8 +199,17 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
                   <span className="doc-item-type">{doc.file_type === "csv" ? "csv" : "pdf"}</span>
                   <span className="doc-item-name">{doc.name}</span>
                   <button
+                    className="doc-action-btn"
+                    onClick={() => handleReindex(doc.name)}
+                    disabled={reindexing === doc.name}
+                    title="Reindex document"
+                  >
+                    {reindexing === doc.name ? "…" : "↺"}
+                  </button>
+                  <button
                     className="doc-delete-btn"
                     onClick={() => handleDelete(doc.name)}
+                    disabled={reindexing === doc.name}
                     title="Delete document"
                   >
                     ✕
