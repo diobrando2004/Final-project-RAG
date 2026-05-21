@@ -481,6 +481,21 @@ def delete_document(doc_name: str):
         raise HTTPException(status_code=500, detail=f"Failed to delete '{doc_name}'.")
 
 
+
+@app.post("/documents/{doc_name}/reindex", response_model=DeleteResponse)
+
+def reindex_document(doc_name: str):
+    if not doc_name.strip():
+        raise HTTPException(status_code=400, detail="Document name cannot be empty.")
+    try:
+        status = executor.doc_manager.reindex_document(doc_name)
+        return DeleteResponse(status=status)
+    except Exception as e:
+        logger.error(f"Reindex error for '{doc_name}': {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to reindex '{doc_name}'.")
+
+
+
 @app.get("/sources")
 def get_sources():
     try:
