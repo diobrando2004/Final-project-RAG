@@ -67,7 +67,7 @@ class RAGExecutor:
             return query
         
     def ask(self, query: str, source_filters: list[str] = None) -> tuple:
-        self.llm.reset()
+        #self.llm.reset()
         print(f"\n--- Query: {query} ---")
         query = self._rewrite_query(query)
         print(f"new query: {query}")
@@ -192,7 +192,7 @@ class RAGExecutor:
             top_p=0.9,
             repeat_penalty=1.2
         )
-        return response["choices"][0]["message"]["content"], None, sources
+        return response["choices"][0]["message"]["content"], None, sources, None
  
     def _ask_csv(self, query: str, table_source: str) -> tuple:
         if table_source:
@@ -200,7 +200,7 @@ class RAGExecutor:
         else:
             table_info = self.csv_pipeline.retrieve_relevant_table(query)
         if not table_info:
-            return "I couldn't find a relevant table for that question.", None, []
+            return "I couldn't find a relevant table for that question.", None, [], None
  
         result_data, sql_used = self.csv_pipeline.generate_and_execute_sql(
             query, table_info
@@ -208,7 +208,7 @@ class RAGExecutor:
         print(f"CSV SQL: {sql_used}")
  
         if isinstance(result_data, str) and result_data.startswith("Error"):
-            return self.csv_pipeline.synthesize(query, result=None, error=result_data), None, []
+            return self.csv_pipeline.synthesize(query, result=None, error=result_data), None, [], sql_used
  
         summary = self.csv_pipeline.synthesize(query, result=result_data)
  
@@ -217,24 +217,25 @@ class RAGExecutor:
         else:
             table = None
  
-        return summary, table, []
+        return summary, table, [], sql_used
 
     def _ask_combined(self, query: str, matched: list[dict]) -> tuple:
         pdf_sources_structured = []
- 
+        all_sqls = []
         # --- csv_only fast path (unchanged) ---
         csv_only = all(e["file_type"] == "csv" for e in matched)
         if csv_only:
             answers, all_tables = [], []
             for entry in matched:
-                answer, table, _ = self._ask_csv(query, entry["source"])
+                answer, table, _, sql = self._ask_csv(query, entry["source"])
+                all_sqls.append(sql)
                 if answer and "couldn't find" not in answer and "Error" not in answer:
                     answers.append(f"[{entry['source']}]: {answer}")
                 if table:
                     all_tables.append(table)
             if not answers:
                 return "I couldn't find any relevant information.", None, []
-            return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, []
+            return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, [], all_sqls[0] if all_sqls else None
  
         # --- MAP: generate one answer per source independently ---
         sub_answers = []
@@ -242,7 +243,7 @@ class RAGExecutor:
  
         for entry in matched:
             if entry["file_type"] == "pdf" and entry["results"]:
-                answer, _, sources = self._ask_pdf(query, results=entry["results"])
+                answer, _, sources, _ = self._ask_pdf(query, results=entry["results"])
                 pdf_sources_structured.extend(sources)
                 if answer and "couldn't find" not in answer.lower():
                     label = entry["source"] or "document"
@@ -250,7 +251,7 @@ class RAGExecutor:
                     print(f"MAP pdf '{label}': {len(answer)} chars")
  
             elif entry["file_type"] == "csv":
-                answer, table, _ = self._ask_csv(query, entry["source"])
+                answer, table, _, sql = self._ask_csv(query, entry["source"])
                 if answer and "couldn't find" not in answer.lower():
                     sub_answers.append((entry["source"], answer))
                     print(f"MAP csv '{entry['source']}': {len(answer)} chars")
@@ -258,11 +259,11 @@ class RAGExecutor:
                     all_tables.append(table)
  
         if not sub_answers:
-            return "I couldn't find any relevant information.", None, pdf_sources_structured
+            return "I couldn't find any relevant information.", None, pdf_sources_structured, all_sqls[0] if all_sqls else None
  
         # If only one source produced a useful answer, return it directly
         if len(sub_answers) == 1:
-            return sub_answers[0][1], all_tables[0] if all_tables else None, pdf_sources_structured
+            return sub_answers[0][1], all_tables[0] if all_tables else None, pdf_sources_structured, all_sqls[0] if all_sqls else None
  
         # --- REDUCE: combine the sub-answers into one final answer ---
         sub_context = "\n\n".join(
@@ -302,7 +303,7 @@ class RAGExecutor:
             repeat_penalty=1.2
         )
         final = response["choices"][0]["message"]["content"].strip()
-        return final, all_tables[0] if len(all_tables) == 1 else None, pdf_sources_structured
+        return final, all_tables[0] if len(all_tables) == 1 else None, pdf_sources_structured, all_sqls[0] if all_sqls else None
 
     def startup_ingest(self):
         all_files = []
@@ -385,6 +386,7 @@ class ChatResponse(BaseModel):
     answer: str
     table: list | None = None
     sources: list[SourceChunks] = []
+    sql: str | None = None 
 
 class DocumentInfo(BaseModel):
     name: str
@@ -403,8 +405,8 @@ def chat(req: ChatRequest):
     if len(req.query) > 2000:
         raise HTTPException(status_code=400, detail="Query is too long (max 2000 characters).")
     try:
-        answer, table, sources = executor.ask(req.query, req.sources)
-        return ChatResponse(answer=answer, table=table, sources=sources)
+        answer, table, sources, sql = executor.ask(req.query, req.sources)
+        return ChatResponse(answer=answer, table=table, sources=sources, sql=sql)
     except Exception as e:
         logger.error(f"Chat error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Something went wrong while generating the answer. Please try again.")

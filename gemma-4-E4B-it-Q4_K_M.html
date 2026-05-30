@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Evaluation — Phi-4-mini-instruct-Q4_K_M</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0e0f11; color: #e8eaf0; padding: 32px; }
+  h1 { font-size: 22px; color: #e8a045; margin-bottom: 4px; }
+  .meta { font-size: 13px; color: #8b909e; margin-bottom: 28px; }
+
+  .summary { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .card {
+    background: #16181c; border: 1px solid #2a2d35; border-radius: 8px;
+    padding: 16px 24px; min-width: 120px; text-align: center;
+  }
+  .card-label { font-size: 11px; color: #8b909e; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .card-value { font-size: 28px; font-weight: 700; }
+  .card-sub { font-size: 11px; color: #555a68; margin-top: 4px; }
+
+  .section-title {
+    font-size: 11px; color: #555a68; text-transform: uppercase;
+    letter-spacing: .1em; margin: 24px 0 10px;
+  }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #1e2128; }
+  th {
+    padding: 10px 12px; text-align: left; color: #e8a045;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap; border-bottom: 1px solid #2a2d35;
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid #2a2d35; vertical-align: top; }
+  tr:not(.doc-separator):hover td { background: #1e2128; }
+  .idx { color: #555a68; width: 36px; }
+  .question { max-width: 180px; font-weight: 500; }
+  .answer { max-width: 240px; color: #8b909e; }
+  .chunks { max-width: 180px; }
+  .elapsed { color: #555a68; white-space: nowrap; }
+  .key-used { color: #555a68; font-size: 11px; white-space: nowrap; }
+  .explanation { max-width: 200px; color: #8b909e; font-size: 12px; }
+
+  details summary {
+    cursor: pointer; color: #e8a045; font-size: 12px;
+    font-family: monospace; user-select: none;
+  }
+  details pre {
+    margin-top: 6px; font-size: 11px; color: #555a68;
+    white-space: pre-wrap; word-break: break-word;
+    background: #0e0f11; padding: 8px; border-radius: 4px;
+    border: 1px solid #2a2d35; max-height: 200px; overflow-y: auto;
+  }
+</style>
+</head>
+<body>
+  <h1>RAG Evaluation Report</h1>
+  <div class="meta">
+    Model: <strong>Phi-4-mini-instruct-Q4_K_M</strong> &nbsp;|&nbsp;
+    2026-05-14 17:19 &nbsp;|&nbsp;
+    26 questions across 6 documents &nbsp;|&nbsp;
+    Judge: Gemini 2.0 Flash (4 key(s) rotating, reference-free)
+  </div>
+
+  <div class="section-title">Overall Metrics</div>
+  <div class="summary">
+    <div class="card">
+      <div class="card-label">Overall</div>
+      <div class="card-value" style="color:#4caf7d">9.8</div>
+      <div class="card-sub">all questions</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Accuracy</div>
+      <div class="card-value" style="color:#4caf7d">9.9</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Completeness</div>
+      <div class="card-value" style="color:#4caf7d">9.4</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Relevance</div>
+      <div class="card-value" style="color:#4caf7d">9.8</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Conciseness</div>
+      <div class="card-value" style="color:#4caf7d">10.0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Avg Response</div>
+      <div class="card-value" style="color:#e8a045">183.2s</div>
+    </div>
+  </div>
+
+  <div class="section-title">Per-Document Scores</div>
+  <div class="summary">
+    
+        <div class="card">
+          <div class="card-label" style="color:#8b909e">Movie maker manual</div>
+          <div class="card-value" style="color:#4caf7d">10.0</div>
+          <div class="card-sub">1 questions</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:#5b8dd9">MRAG Paper</div>
+          <div class="card-value" style="color:#4caf7d">9.4</div>
+          <div class="card-sub">5 questions</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:#b06fd8">Legal-DC Paper</div>
+          <div class="card-value" style="color:#4caf7d">10.0</div>
+          <div class="card-sub">5 questions</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:#4caf7d">IPCC AR6 Ch.3</div>
+          <div class="card-value" style="color:#4caf7d">9.7</div>
+          <div class="card-sub">5 questions</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:#e8a045">Forsyth Prob &amp; Stats</div>
+          <div class="card-value" style="color:#4caf7d">9.9</div>
+          <div class="card-sub">5 questions</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="color:#e05c8a">Dog Breeds Book</div>
+          <div class="card-value" style="color:#4caf7d">9.9</div>
+          <div class="card-sub">5 questions</div>
+        </div>
+  </div>
+
+  <div class="section-title">Results</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Question</th>
+          <th>RAG Answer</th>
+          <th>Retrieved Context</th>
+          <th>Accuracy</th>
+          <th>Completeness</th>
+          <th>Relevance</th>
+          <th>Conciseness</th>
+          <th>Overall</th>
+          <th>Time</th>
+          <th>Key</th>
+          <th>Judge Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#8b909e;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ Movie maker manual
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">1</td>
+          <td class="question">how to crop photos?</td>
+          <td class="answer">To open the tool, select More tools → Crop, enhance photo. Then turn on the option Crop Tool (the default choice is on), select a ratio, and drag the corners of the white frame or the whole frame to set crop area. Select OK to save and go back, or select Cancel to discard all changes.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[windowsMovieMaker — chunk 1]:
+## **Arranging clips**  
+There are two ways to change the clip’s position. If you want to move one clip to nearby position, you can just drag and drop the clip directly on the project timeline. If you need to move multiple clips at the same time, or you need to move a ...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">86.1s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately and completely extracts the specific steps for cropping photos as described in the source text. It provides the correct navigation path and the sequential steps required to perform the action.</td>
+        </tr>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#5b8dd9;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ MRAG Paper
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">2</td>
+          <td class="question">What are the four task cohorts covered by the MRAG-Bench benchmark, and how many total test samples does it contain?</td>
+          <td class="answer">The four task cohorts covered by the MRAG-Bench benchmark are multi-choice question answering (MCQA), information extraction (IE), link prediction (LP), and long-form question answering (LFQA). It contains a total of 14,816 test samples.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article2 — chunk 1]:
+## **MRAG: Benchmarking Retrieval-Augmented Generation for Bio-medicine**
+
+## **Wei Zhu[1,]**[*]  
+1University of Hong Kong, Hong Kong, HK, China
+
+## **Abstract**  
+While Retrieval-Augmented Generation (RAG) has been swiftly adopted in scientific and clinical QA systems, a comp...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">286.4s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately identifies the four task cohorts (MCQA, IE, LP, and LFQA) and correctly states the total number of test samples (14,816) based on the provided source chunks. It directly answers the question without any extraneous information.</td>
+        </tr>
+        <tr>
+          <td class="idx">3</td>
+          <td class="question">In the MRAG benchmark results, which model achieved the highest average MCQA score without RAG, and what was that score?</td>
+          <td class="answer">GPT-4 achieved the highest average MCQA score without RAG, with a score of 80.2%</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article2 — chunk 1]:
+## **3.2 Evaluation metrics**  
+We use objective metrics can evaluate models on the MCQA, IE, and LP task cohorts. For the LFQA tasks, since there are no standard answers, we conducted a series of model- and human-based evaluations.
+
+## **4 RAG system**  
+To comprehensively eva...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">187.6s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately identifies GPT-4 as the highest-scoring model without RAG and correctly cites the 80.2% score as stated in both the text of Section 5.1 and Table 1. It directly and concisely answers all parts of the user's question based on the provided source chunks.</td>
+        </tr>
+        <tr>
+          <td class="idx">4</td>
+          <td class="question">What is the COT-Refine prompting strategy and how does it differ from standard Chain-of-Thought prompting?</td>
+          <td class="answer">COT-Refine is a two-stage prompting strategy that builds on COT and Self-Refine. In the first stage, given a COT prompt and a question, the model produces an initial response (R0). Then, in the second stage, the model is conditioned on the original prompt, question, and R0 to produce a refined answer with detailed explanations, allowing the LLM to reflect on its previous answer and make necessary corrections.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article2 — chunk 1]:
+## **5.3 Ablation studies**  
+**Comparison of different retrievers** In this subsection, we now investigate how different retrievers affect the performances of RAG systems. Table 3 reports the performance of GPT-3.5 with RAG on PubmedQA, MedQA, and DRKG with the help of differe...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">8</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.5</td>
+          <td class="elapsed">193.7s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately describes the two-stage mechanism of COT-Refine and its purpose of reflection based on the provided text. While it clearly explains what COT-Refine is, it could have more explicitly defined standard COT (described in the chunks as demonstrating intermediate reasoning steps in one stage) to more directly highlight the difference.</td>
+        </tr>
+        <tr>
+          <td class="idx">5</td>
+          <td class="question">What happens to RAG accuracy on PubMedQA when the number of retrieved snippets exceeds 2, and why?</td>
+          <td class="answer">With an increase in $k$, more irrelevant documents are included in the prompt, hurting the accuracy.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article2 — chunk 1]:
+## **5.3 Ablation studies**  
+**Comparison of different retrievers** In this subsection, we now investigate how different retrievers affect the performances of RAG systems. Table 3 reports the performance of GPT-3.5 with RAG on PubmedQA, MedQA, and DRKG with the help of differe...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">80.5s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer perfectly captures the information provided in the source text, stating that accuracy is hurt when the number of documents increases because more irrelevant documents are included in the prompt.</td>
+        </tr>
+        <tr>
+          <td class="idx">6</td>
+          <td class="question">According to the MRAG LFQA results, how does RAG affect the readability of LLM responses, and what is the proposed explanation for this effect?</td>
+          <td class="answer">LLM responses may become slightly less readable for long-form questions even though RAG improves usefulness and reasoning quality.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article2 — chunk 1]:
+## **MRAG: Benchmarking Retrieval-Augmented Generation for Bio-medicine**
+
+## **Wei Zhu[1,]**[*]  
+1University of Hong Kong, Hong Kong, HK, China
+
+## **Abstract**  
+While Retrieval-Augmented Generation (RAG) has been swiftly adopted in scientific and clinical QA systems, a comp...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#e8a045;font-weight:600">5</td>
+          <td style="color:#e8a045;font-weight:600">5</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">7.5</td>
+          <td class="elapsed">277.9s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately captures the finding that RAG makes responses slightly less readable for long-form questions. However, it fails to address the second part of the user's question regarding the proposed explanation for this effect. Furthermore, the provided source chunks do not actually contain a proposed explanation for the decrease in readability, which the RAG system should have ideally stated.</td>
+        </tr>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#b06fd8;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ Legal-DC Paper
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">7</td>
+          <td class="question">What is the Legal-DC benchmark? How many legal documents and QA pairs does the final dataset contain?</td>
+          <td class="answer">Legal-DC is a benchmark dataset constructed to enable joint evaluation of both retrievers and generators in Chinese legal RAG systems. The final Legal-DC dataset contains 480 legal documents and 2,475 high-quality QA pairs.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article3 — chunk 1]:
+## **6 Conclusions and Future Work**
+
+## **6.1 Key Findings and Contributions**  
+This study addresses the joint evaluation and optimization problem of Chinese legal RAG systems through benchmark construction, framework design, and systematic experiments.  
+**Benchmark contribu...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">149.3s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately describes the purpose of the Legal-DC benchmark and provides the exact counts for documents and QA pairs as found in the source text. It is complete, relevant, and concise without any unnecessary information.</td>
+        </tr>
+        <tr>
+          <td class="idx">8</td>
+          <td class="question">Why was ERNIE-4.0 chosen over GPT-3.5 to generate candidate QA pairs in Legal-DC, and what were their respective answer accuracy scores?</td>
+          <td class="answer">ERNIE-4.0 was adopted because it outperformed GPT-3.5 in all three metrics: relevance (82% vs. 68%), significance (79% vs. 63%), and accuracy (91% vs. 83%).</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article3 — chunk 1]:
+## **3.1 Dataset Construction**  
+Given that various market operators require frequent legal consulting services in their business operations and RAG technologies hold substantial potential to address this demand, we collected laws, rules, and regulations governing the business...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">64.4s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer correctly identifies that ERNIE-4.0 was chosen because it outperformed GPT-3.5 in relevance, significance, and accuracy. It also provides the specific accuracy scores (91% vs. 83%) as requested by the question, directly mirroring the data in the source text.</td>
+        </tr>
+        <tr>
+          <td class="idx">9</td>
+          <td class="question">What is Document Selection Accuracy (DSA) in the Legal-DC benchmark and how is it calculated?</td>
+          <td class="answer">DSA measures the capability of LLMs to select the right content from a set of retrieved documents. The calculation formula is as follows:
+Where:
+- d is the number of questions for which the LLM selected the correct content from the retrieved set;
+- D is the number of questions that successfully recalled the correct document in the top K_ retrieved content set (K_ = 5 in this study).</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article3 — chunk 1]:
+## **3.2 Evaluation metrics**  
+Two groups were designed and used in the proposed benchmark: metrics for the retrieval methods and metrics for the answer generation methods.  
+For each question, if the target content is in the top _K_ retrieved content set, we deem that the ret...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">145.9s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer provides the definition and calculation variables for DSA exactly as they are presented in the source text. It accurately identifies the metric's purpose and the specific conditions for variables d and D within the Legal-DC benchmark. Although the source text lacks the explicit mathematical notation for the formula, the answer remains faithful to the information provided in the chunks.</td>
+        </tr>
+        <tr>
+          <td class="idx">10</td>
+          <td class="question">How does LegRAG's retrieval performance compare to LightRAG in terms of Recall and MRR@5 on the Legal-DC benchmark?</td>
+          <td class="answer">LegRAG achieved a Recall of 78.02% and an MRR@5 of 50.23%, which is an improvement over LightRAG's Recall of 75.86% (an increase of 2.16 percentage points) and its MRR@5 of 47.56% (an increase of 2.67 percentage points).</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article3 — chunk 1]:
+## **6 Conclusions and Future Work**
+
+## **6.1 Key Findings and Contributions**  
+This study addresses the joint evaluation and optimization problem of Chinese legal RAG systems through benchmark construction, framework design, and systematic experiments.  
+**Benchmark contribu...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">327.7s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately extracts the specific percentages and improvement margins for LegRAG and LightRAG from the source text. It directly addresses the comparison of Recall and MRR@5 metrics as requested, with no extraneous information.</td>
+        </tr>
+        <tr>
+          <td class="idx">11</td>
+          <td class="question">What difficulty gradient was found across the three Legal-DC question types — Conceptual, Generalization, and Logic — and what explains the gap?</td>
+          <td class="answer">Conceptual questions achieved the highest average score (0.730), followed by Generalization at 0.694, while Logic was the most difficult with a score of 0.662. This difficulty gradient stems from Conceptual questions relying on precise keyword matching and definition extraction, whereas Generalization questions require synthesizing information across multiple clauses to abstract key points, and Logic questions pose the greatest challenge because they necessitate capturing implicit inferential relationships between provisions that are rarely expressed through explicit keywords.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[article3 — chunk 1]:
+## **6 Conclusions and Future Work**
+
+## **6.1 Key Findings and Contributions**  
+This study addresses the joint evaluation and optimization problem of Chinese legal RAG systems through benchmark construction, framework design, and systematic experiments.  
+**Benchmark contribu...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">190.4s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer is perfectly accurate and complete, using the exact numerical scores and qualitative explanations provided in Section 5.2.1 of the source text. It directly addresses both parts of the question without adding any outside information.</td>
+        </tr>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#4caf7d;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ IPCC AR6 Ch.3
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">12</td>
+          <td class="question">What are the projected ranges of global mean sea level rise between 1995-2014 and 2100 under SSP1-1.9 versus SSP5-8.5?</td>
+          <td class="answer">I don't know</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[IPCC_AR6_WGII_Chapter03 — chunk 1]:
+## Cross-Chapter Box SLR (continued)  
+sediment accumulation by dissipating wave energy and reducing impacts of storms, at least at present-day sea levels (high confidence) (Temmerman et al., 2013; Narayan et al., 2016; Romañach et al., 2018; Laengner et al., 201...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">214.3s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The source chunks do not contain any information regarding SSP1-1.9 projections for sea level rise, nor do they provide specific numerical ranges for SSP5-8.5 at the year 2100. Since the required data is missing from the provided text, 'I don't know' is the most accurate and responsible answer possible.</td>
+        </tr>
+        <tr>
+          <td class="idx">13</td>
+          <td class="question">What does the IPCC chapter say about climate change's effect on marine-borne pathogens like Vibrio sp., and what are the consequences for human health and ecosystem services?</td>
+          <td class="answer">Climate change is increasing the geographic spread and risk of marine-borne pathogens like Vibrio sp. (very high confidence), which endanger human health and decrease provisioning and cultural ecosystem services (high confidence). Projected increases in temperature, extreme and variable rainfall conditions, coastal flooding and SLR strongly increase the risk of frequent and severe aquatic human pathogen outbreaks in ocean and coastal areas that will continue to harm human health and cause economic losses (high confidence).</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[IPCC_AR6_WGII_Chapter03 — chunk 1]:
+**At local to regional scales, climate change worsens the impacts on marine life of non-climate anthropogenic drivers, such as habitat degradation, marine pollution, overfishing and overharvesting, nutrient enrichment and introduction of non-indigenous species (v...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">8</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.5</td>
+          <td class="elapsed">277.4s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately reflects the source chunks' information regarding the increased risk of Vibrio sp. and its impacts on health and ecosystem services. It captures the high-level conclusions but misses specific details like the impacts on aquaculture and shellfish mentioned in Chunk 3.</td>
+        </tr>
+        <tr>
+          <td class="idx">14</td>
+          <td class="question">What are the three ecosystem types classified as blue carbon ecosystems, and what threats do climate change and non-climate drivers pose to them?</td>
+          <td class="answer">The three ecosystem types commonly considered blue carbon ecosystems are mangroves, salt marshes and seagrass beds. Climate change and other anthropogenic drivers threaten these systems; specifically, climate change will drive ongoing declines in the extent of seagrasses in temperate waters as well as poleward range expansions of seagrasses and mangroves, while warming and SLR-driven salinisation can cause shifts in plant species inland and poleward.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[IPCC_AR6_WGII_Chapter03 — chunk 1]:
+Observations Projections&lt;br&gt;AR5 (Wong et al., 2014)&lt;br&gt;Future changes in climate impact-drivers such as warming, acidification, waves, storms,&lt;br&gt;sea level rise (SLR) and runoff will have consequences for ecosystem function and services&lt;br&gt;Humans have impacted la...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#e8a045;font-weight:600">6</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.0</td>
+          <td class="elapsed">205.2s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer correctly identifies the three blue carbon ecosystems and provides specific climate-related threats like sea-level rise and range shifts. However, it is incomplete as it fails to detail the specific threats posed by non-climate drivers, such as eutrophication, land-use change, and coastal squeeze, which are explicitly discussed in the source chunks.</td>
+        </tr>
+        <tr>
+          <td class="idx">15</td>
+          <td class="question">What does the IPCC chapter conclude about the relationship between eliminating overfishing and the future adaptation of fisheries to climate change?</td>
+          <td class="answer">Limitng overexploitation is the central goal of fishery management, and it very likely benefits fisheries adaptation to climate change.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[IPCC_AR6_WGII_Chapter03 — chunk 1]:
+Bertrand, A., R. Vögler and O. Defeo, 2018: Chapter 15: Climate change impacts, vulnerabilities and adaptations: Southwest Atlantic and Southeast Pacific marine fisheries. In: Impacts of Climate Change on Fisheries and Aquaculture: Synthesis of Current Knowledge,...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">394.8s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer correctly identifies the relationship between limiting overfishing and climate adaptation as stated in the text. It uses phrasing directly from the source chunks to confirm that management efforts in this area facilitate or benefit future adaptation.</td>
+        </tr>
+        <tr>
+          <td class="idx">16</td>
+          <td class="question">What is the estimated mean rate of change in seasonal timing for phytoplankton, and with what confidence level is this assessed?</td>
+          <td class="answer">78.41% −7.5 d per decade with Very high confidence</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[IPCC_AR6_WGII_Chapter03 — chunk 1]:
+**----- Start of picture text -----**&lt;br&gt;
+Observations Projections&lt;br&gt;AR5 WGII (Hoegh-Guldberg et al., 2014; Larsen et al., 2014)&lt;br&gt;‘Changes to sea temperature have altered the phenology, or timing of key life-history events such as plankton blooms, and migrator...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">9</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.8</td>
+          <td class="elapsed">181.1s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately identifies the mean rate of change (-7.5 days per decade) and the confidence level (Very high confidence) for phytoplankton from the table in Chunk 2. It also includes the consistency rate (78.41%), which is accurate data from the source but was not specifically requested by the question.</td>
+        </tr>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#e8a045;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ Forsyth Prob &amp; Stats
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">17</td>
+          <td class="question">What is the central limit theorem and why does the book say it means you will encounter normal distributions very often in practice?</td>
+          <td class="answer">The central limit theorem means that, under some not very worrying technical conditions, the sum of a large number of independent random variables will be very close to normal. The book says you will see normal distributions very often in practice because many of the processes we observe add up subsidiary random variables.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[OER000001395 — chunk 1]:
+## **5.3.3 Properties of the Normal Distribution**  
+Normal distributions are important, because one often runs into data that is well described by a normal distribution. It turns out that anything that behaves like a binomial distribution with a lot of trials—for example, ...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">58.2s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately defines the central limit theorem and explains its practical frequency using the specific reasoning provided in the source text. It covers all parts of the question concisely without including irrelevant information.</td>
+        </tr>
+        <tr>
+          <td class="idx">18</td>
+          <td class="question">What is maximum likelihood estimation (MLE) and what is the distinction between the unknown parameter theta and its estimate theta-hat?</td>
+          <td class="answer">Maximum Likelihood Estimation (MLE) is a principle that seeks to choose the value of an unknown parameter, $\theta$, which maximizes the probability of observing the actual data. The function representing this probability, $P_{D|\theta}$, is called the likelihood, and MLE aims to maximize it with respect to $\theta$. There are two distinct concepts involved: the true but unknown parameter(s), denoted as $\theta$, and its estimate derived from the observed data, denoted as $\hat{\theta}$.</td>
+          <td class="chunks">
+            <details>
+              <summary>2 source(s)</summary>
+              <pre>[240813296v3 — chunk 1]:
+## **Chapter 1**
+
+## **Introduction**
+
+## **1.1 Background of Large Language Models (LLMs)**  
+Large Language Models (LLMs) represent a significant leap in computational systems capable of understanding and generating human language. Building on traditional language models (...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">250.0s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately defines Maximum Likelihood Estimation and the distinction between the parameter and its estimate based on the provided source chunks. It correctly identifies the likelihood function and the notation for the unknown parameter and the estimate as described in the text.</td>
+        </tr>
+        <tr>
+          <td class="idx">19</td>
+          <td class="question">What is a p-value and how does the book define statistical significance in the context of hypothesis testing?</td>
+          <td class="answer">The p-value represents the fraction of samples that would give a more extreme value of the test statistic than that observed, if the hypothesis was true. Statistical significance in this context means the p-value for the relevant test statistic for those measurements; it can also refer to the value against which the p-value will be tested, ideally chosen in advance, and should be interpreted as meaning the fraction of all possible samples that the study could encounter that would cause the chosen procedure to reject the null hypothesis, given that it was true.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[OER000001395 — chunk 1]:
+## **7.2.1 Assuming Known Population Standard Deviations**  
+In the simplest case, assume the two populations each have _known_ standard deviation, i.e. popsd .f _X_ g/ and popsd .f _Y_ g/ are _known_ . In this case, the distribution of sample means is normal. We can use so...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">132.8s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer provides verbatim definitions from the source text for both p-value and statistical significance. It correctly captures the dual definition of statistical significance provided in the book, distinguishing between its use for measurements and for a study.</td>
+        </tr>
+        <tr>
+          <td class="idx">20</td>
+          <td class="question">How does the k-means algorithm re-estimate cluster centers in its soft weighted variant, and what role does the scaling parameter sigma play?</td>
+          <td class="answer">The $j$'th cluster center is re-estimated by using the weights to compute a weighted average of the points, specifically: $\mathbf{c}_j = \frac{\sum_i w_{ij} \mathbf{x}_i}{\sum_i w_{ij}}$. The scaling parameter sigma sets the meaning of &quot;much closer&quot;—the distance between point $i$ and center $j$, denoted as $d_{ij}$, is measured in units of $\sigma$.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[OER000001395 — chunk 1]:
+## **12.3.2 Soft Assignment**  
+One difficulty with k-means is that each point must belong to exactly one cluster. But, given we don’t know how many clusters there are, this seems wrong. If a point is close to more than one cluster, why should it be forced to choose? This r...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">8</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.5</td>
+          <td class="elapsed">74.5s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer accurately identifies the method for re-estimating cluster centers (weighted average) and the role of the sigma parameter as described in the source. While the specific mathematical formula provided in the answer is not explicitly written in the source chunks due to formatting or OCR gaps, the text clearly describes the process and the components used.</td>
+        </tr>
+        <tr>
+          <td class="idx">21</td>
+          <td class="question">What is the Support Vector Machine hinge loss, and how does the book describe finding an SVM classifier using stochastic gradient descent?</td>
+          <td class="answer">The hinge loss is given by $\max(0, 1 - y_i (\mathbf{a}^T \mathbf{x}_i + b))$.
+
+To train an SVM using stochastic gradient descent:
+Start with a dataset containing $N$ pairs $(\mathbf{x}_i; y_i)$. Optionally, rescale the feature vector components so each has unit variance. Choose possible values for the regularization weight $\lambda$. Separate the dataset into test and training sets, reserving the test set. For each value of $\lambda$, use the training set to estimate accuracy using cross-validation and stochastic gradient descent. Use this information to choose $\lambda_0$, the best value of $\lambda$ (usually yielding the highest accuracy). Then, fit the best SVM using $\lambda_0$. Finally, compute the accuracy or error rate on the test set.
+
+The procedure for training an SVM with Stochastic Gradient Descent involves obtaining $\mathbf{u} \in \mathbb{R}^d$, $a$; and $b$ by stochastic gradient descent on the cost function where $\mathcal{L}_0 = \sum_{i=1}^{N} \max(0, 1 - y_i (\mathbf{a}^T \mathbf{x}_i + b))$ (or a similar form involving $\lambda$). This is done by first choosing fixed numbers for items per batch ($Nb$), steps per season ($Ns$), and the number of steps to take before evaluating the model ($k$, usually much smaller than $Ns$). A random start point is chosen, and then iteration proceeds: update the stepsize (typically $[\gamma]_s = \frac{1}{s} + m n$ for constants $[m]$ and $[n]$), split the training dataset into a training part and a validation part (which changes each season) to get an unbiased estimate of error during that season's training, take $k$ steps by selecting a batch of $Nb$ data items uniformly at random from the training part, compute $\nabla \mathcal{L}_0$, update the model by computing $\mathbf{u}[n]$ and updating it, evaluate the current model $\mathbf{u}[n]$ on the validation part for that season, plot the accuracy as a function of step number. Training stops either after a fixed number of seasons (or epochs) or when the error reaches some level or meets a criterion observed in the error plot.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[OER000001395 — chunk 1]:
+## **11.4.5 Example: Training an SVM with Stochastic Gradient Descent**  
+I have summarized the SVM training procedure in a set of boxes, below. You should be aware that the recipe there admits many useful variations, though. One useful practical trick is to rescale the fea...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">339.7s</td>
+          <td class="key-used" title="Gemini key used for this question">K1</td>
+          <td class="explanation">The answer correctly identifies the hinge loss formula and provides a detailed summary of both the high-level training strategy and the specific stochastic gradient descent procedure. All information provided is directly supported by the source procedures and definitions.</td>
+        </tr>
+        <tr class="doc-separator">
+          <td colspan="12" style="background:#1a1d24;color:#e05c8a;
+              font-size:11px;font-weight:700;letter-spacing:.1em;
+              text-transform:uppercase;padding:8px 14px;border-bottom:1px solid #2a2d35;">
+            ▸ Dog Breeds Book
+          </td>
+        </tr>
+        <tr>
+          <td class="idx">22</td>
+          <td class="question">How many dog breeds does the World Canine Organization recognize, and how does the book define what a dog breed actually is?</td>
+          <td class="answer">The World Canine Organization has more than 340 breeds, and dog breeds are groupings based on similar characteristics of appearance and behavior.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## **Dog Breeds of the World**  
+**Get your own copy of this book Visit: www.plexidors.com Call: 800-283-8045**  
+**Written by: Maria Sadowski**  
+**PlexiDor Performance Pet Doors** 4523 30th St West #E502 Bradenton, FL 34207  
+http://www.plexidors.com  
+Do...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">118.6s</td>
+          <td class="key-used" title="Gemini key used for this question">K2</td>
+          <td class="explanation">The answer accurately identifies that the World Canine Organization recognizes more than 340 breeds and provides the exact definition of a dog breed as given in the source text. It covers all parts of the question perfectly and concisely.</td>
+        </tr>
+        <tr>
+          <td class="idx">23</td>
+          <td class="question">According to the book, which two dog breeds are the only ones in the world with blue tongues, and where do both of them originate from?</td>
+          <td class="answer">The Shar-Pei and the Chow-Chow are the only two dog breeds in the world with blue tongues, both originating from China.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## Hungarian Puli  
+**The Puli is a Hungarian dog breed used for herding and guarding livestock. The dogs are fairly small and easily recognizable because of their long, corded, and waterproof coat.**  
+These dogs are active and intelligent. They may look b...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">168.8s</td>
+          <td class="key-used" title="Gemini key used for this question">K2</td>
+          <td class="explanation">The answer perfectly matches the information provided in the source chunks. It correctly identifies the Shar-Pei and Chow-Chow and their origin in China, following the text's specific claims.</td>
+        </tr>
+        <tr>
+          <td class="idx">24</td>
+          <td class="question">What is unique about the Norwegian Lundehund's physical anatomy compared to other dog breeds, and what was it historically used for?</td>
+          <td class="answer">The Norwegian Lundehund is unique due to having six toes on each foot, prick ears that can fold closed backwards or forwards at will, and a distinctive ability to tip its head backward until it touches the backbone. Historically, this breed was used for wrestling and retrieving live Puffins from steep vertical cliff crevices.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## Kooikerhondje  
+**The Kooikerhondje is a Dutch breed stemming back to the 1500’s. They are also known as Dutch Decoy Dogs and were traditionally used to drive ducks into a trap where the hunter could easily get them. Their name comes from the hunter, who...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">9</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.8</td>
+          <td class="elapsed">149.9s</td>
+          <td class="key-used" title="Gemini key used for this question">K2</td>
+          <td class="explanation">The answer is factually correct and directly addresses both parts of the question using the provided text. It identifies the specific anatomical features and the historical use of retrieving puffins, though it omits the mention of the breed's general joint flexibility.</td>
+        </tr>
+        <tr>
+          <td class="idx">25</td>
+          <td class="question">What is the origin story of the Havanese breed, and why is every Havanese living outside Cuba today significant from a historical perspective?</td>
+          <td class="answer">The Havana breed, the national dog of Cuba, traces its ancestry to dogs that arrived on the island from Tenerife in the early 16th century. From a historical perspective, every Havana living outside of Cuba is significant because it descends from eleven dogs that escaped with their owners during the revolution.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## Havanese  
+**The Havanese is the national dog of Cuba, and its ancestors arrived to the island from Tenerife in the early 16th century. At the time Cuban trade was highly restricted by the Spanish, and Tenerife was one of the few open ports. The breed ha...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">9</td>
+          <td style="color:#4caf7d;font-weight:600">9</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">9.5</td>
+          <td class="elapsed">127.8s</td>
+          <td class="key-used" title="Gemini key used for this question">K2</td>
+          <td class="explanation">The answer accurately captures the geographic origins and the historical significance of the 11 dogs that fled the revolution. However, it refers to the breed as the 'Havana breed' instead of the 'Havanese' and omits the detail regarding restricted Spanish trade.</td>
+        </tr>
+        <tr>
+          <td class="idx">26</td>
+          <td class="question">How does the book describe the Bloodhound's sense of smell compared to humans, and what real-world law enforcement role has this ability earned the breed?</td>
+          <td class="answer">The average bloodhound has around four billion olfactory receptor cells, while the average human has around five million. Their ability to track a scent trail left several days ago has earned their work acceptance in courts of law for law enforcement.</td>
+          <td class="chunks">
+            <details>
+              <summary>1 source(s)</summary>
+              <pre>[Dog-breed-book-low-resolution — chunk 1]:
+## Schipperke  
+**The Schipperke is a small dog with foxlike features that originally worked as companion, watchdog, and vermin hunter. It often worked on boats - the word “schip” means boat - and the breed is nicknamed “Little Captain”.**  
+The Schipperke ...</pre>
+            </details>
+          </td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:600">10</td>
+          <td style="color:#4caf7d;font-weight:700;font-size:15px">10.0</td>
+          <td class="elapsed">79.7s</td>
+          <td class="key-used" title="Gemini key used for this question">K2</td>
+          <td class="explanation">The answer accurately captures the specific numerical comparison of olfactory receptor cells (4 billion vs 5 million) and identifies the legal status of their tracking work as the real-world role mentioned in the text. It is concise and fully addresses both parts of the prompt using only the provided source.</td>
+        </tr></tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -24,7 +24,7 @@ test/
 csv to test/
 excel file test/
 tryToMakeRAGWork/
-
+rag_csv_functions/
 # --- Python & Environment Clutter ---
 venv/
 venv_old/

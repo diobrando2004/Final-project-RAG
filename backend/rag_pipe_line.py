@@ -277,7 +277,7 @@ class RAGPipeline:
         generated_text = generated_text.split("<eos>")[0].strip()
         clean_sql = f"{prefill} {generated_text}"
         clean_sql = self.deduplicate_sql(clean_sql)
-
+        clean_sql= clean_sql.replace("`", '"')
         col_names = set(target_table_info['columns'].keys())
         for match in re.findall(r'"([^"]*)"', clean_sql):
             if match != table_name and match not in col_names:
