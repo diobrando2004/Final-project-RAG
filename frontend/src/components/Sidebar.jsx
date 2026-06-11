@@ -1,15 +1,75 @@
-import { useRef, useState } from "react";
-import { uploadDocuments, deleteDocument, reindexDocument } from "../api";
+import { useRef, useState, useEffect } from "react";
+import { uploadDocuments, deleteDocument, reindexDocument, getDatabases, connectDatabase, disconnectDatabase, reloadDatabase } from "../api";
 
 const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls","docx"];
 
-export default function Sidebar({ docs, sources, selectedSources, onSourcesChange, onDocsChanged }) {
+export default function Sidebar({ docs, sources, selectedSources, onSourcesChange, selectedSqlSource, onSqlSourceChange, onDocsChanged }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [reindexing, setReindexing] = useState(null); // doc name being reindexed
+  const [reindexing, setReindexing] = useState(null);
   const [status, setStatus] = useState("");
+
+  // Database state
+  const [databases, setDatabases] = useState([]);
+  const [dbName, setDbName] = useState("");
+  const [dbConnStr, setDbConnStr] = useState("");
+  const [dbConnecting, setDbConnecting] = useState(false);
+  const [reloadingDb, setReloadingDb] = useState(null);
+  const [expandedDbs, setExpandedDbs] = useState({});
+
+  useEffect(() => {
+    getDatabases().then(setDatabases).catch(() => {});
+  }, []);
+
+  async function handleConnectDb() {
+    if (!dbName.trim() || !dbConnStr.trim()) return;
+    setDbConnecting(true);
+    setStatus("Connecting to database…");
+    try {
+      const msg = await connectDatabase(dbName.trim(), dbConnStr.trim());
+      setStatus(msg);
+      setDbName("");
+      setDbConnStr("");
+      const updated = await getDatabases();
+      setDatabases(updated);
+      onDocsChanged();
+    } catch (err) {
+      setStatus(`Connect failed: ${err.response?.data?.detail || err.message}`);
+    } finally {
+      setDbConnecting(false);
+    }
+  }
+
+  async function handleDisconnectDb(name) {
+    if (!confirm(`Disconnect "${name}"?`)) return;
+    try {
+      const msg = await disconnectDatabase(name);
+      setStatus(msg);
+      const updated = await getDatabases();
+      setDatabases(updated);
+      onDocsChanged();
+    } catch (err) {
+      setStatus(`Disconnect failed: ${err.response?.data?.detail || err.message}`);
+    }
+  }
+
+  async function handleReloadDb(name) {
+    setReloadingDb(name);
+    setStatus(`Reloading "${name}"…`);
+    try {
+      const msg = await reloadDatabase(name);
+      setStatus(msg);
+      const updated = await getDatabases();
+      setDatabases(updated);
+      onDocsChanged();
+    } catch (err) {
+      setStatus(`Reload failed: ${err.response?.data?.detail || err.message}`);
+    } finally {
+      setReloadingDb(null);
+    }
+  }
   const [filterOpen, setFilterOpen] = useState(false);
 
   // ── Source filter logic ─────────────────────────────────────────────
@@ -76,18 +136,7 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
     }
   }
 
-  // ── Delete ──────────────────────────────────────────────────────────
-  async function handleDelete(docName) {
-    if (!confirm(`Delete "${docName}"? This cannot be undone.`)) return;
-    try {
-      const msg = await deleteDocument(docName);
-      setStatus(msg);
-      onDocsChanged();
-    } catch (err) {
-      setStatus(`Delete failed: ${err.response?.data?.detail || err.message}`);
-    }
-  }
-
+  // ── Reindex ───────────────────────────────────────────────────────────
   async function handleReindex(docName) {
     setReindexing(docName);
     setStatus(`Reindexing "${docName}"…`);
@@ -99,6 +148,18 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
       setStatus(`Reindex failed: ${err.response?.data?.detail || err.message}`);
     } finally {
       setReindexing(null);
+    }
+  }
+
+  // ── Delete ──────────────────────────────────────────────────────────
+  async function handleDelete(docName) {
+    if (!confirm(`Delete "${docName}"? This cannot be undone.`)) return;
+    try {
+      const msg = await deleteDocument(docName);
+      setStatus(msg);
+      onDocsChanged();
+    } catch (err) {
+      setStatus(`Delete failed: ${err.response?.data?.detail || err.message}`);
     }
   }
 
@@ -209,11 +270,103 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
                   <button
                     className="doc-delete-btn"
                     onClick={() => handleDelete(doc.name)}
-                    disabled={reindexing === doc.name}
                     title="Delete document"
                   >
                     ✕
                   </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Live SQL Databases */}
+        <div>
+          <div className="sidebar-section-title">Live SQL Databases</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <input
+              className="chat-input"
+              style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
+              placeholder="Database name (e.g. my_postgres)"
+              value={dbName}
+              onChange={(e) => setDbName(e.target.value)}
+              disabled={dbConnecting}
+            />
+            <input
+              className="chat-input"
+              style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
+              placeholder="postgresql://user:pass@host:5432/db"
+              value={dbConnStr}
+              onChange={(e) => setDbConnStr(e.target.value)}
+              disabled={dbConnecting}
+            />
+            <button
+              className="btn btn-primary"
+              onClick={handleConnectDb}
+              disabled={dbConnecting || !dbName.trim() || !dbConnStr.trim()}
+            >
+              {dbConnecting ? "Connecting…" : "⚡ Connect"}
+            </button>
+          </div>
+
+          {databases.length > 0 && (
+            <div style={{ marginTop: 8 }}>
+              {databases.map((db) => (
+                <div key={db.name} style={{ marginBottom: 4 }}>
+                  {/* Database row */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <button
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", fontSize: 10, padding: "0 2px", flexShrink: 0 }}
+                      onClick={() => setExpandedDbs(p => ({ ...p, [db.name]: !p[db.name] }))}
+                    >
+                      {expandedDbs[db.name] ? "▼" : "▶"}
+                    </button>
+                    <label className="filter-option" style={{ flex: 1, margin: 0 }}>
+                      <input
+                        type="radio"
+                        name="sqlSource"
+                        checked={selectedSqlSource === db.name}
+                        onChange={() => onSqlSourceChange(selectedSqlSource === db.name ? null : db.name)}
+                      />
+                      <span className="filter-option-label" style={{ fontWeight: 600 }}>{db.name}</span>
+                      <span style={{ fontSize: 10, color: "var(--text-muted)", marginLeft: 4 }}>{db.dialect}</span>
+                    </label>
+                    <button
+                      className="doc-action-btn"
+                      onClick={() => handleReloadDb(db.name)}
+                      disabled={reloadingDb === db.name}
+                      title="Reload database"
+                    >
+                      {reloadingDb === db.name ? "…" : "↺"}
+                    </button>
+                    <button
+                      className="doc-delete-btn"
+                      onClick={() => handleDisconnectDb(db.name)}
+                      disabled={reloadingDb === db.name}
+                      title="Disconnect"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Tables (expanded) */}
+                  {expandedDbs[db.name] && db.tables.map((tbl) => {
+                    const key = `${db.name}::${tbl}`;
+                    return (
+                      <div key={key} style={{ display: "flex", alignItems: "center", paddingLeft: 24, marginTop: 2 }}>
+                        <span style={{ color: "var(--text-muted)", marginRight: 4, fontSize: 11 }}>└</span>
+                        <label className="filter-option" style={{ flex: 1, margin: 0 }}>
+                          <input
+                            type="radio"
+                            name="sqlSource"
+                            checked={selectedSqlSource === key}
+                            onChange={() => onSqlSourceChange(selectedSqlSource === key ? null : key)}
+                          />
+                          <span className="filter-option-label">{tbl}</span>
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>

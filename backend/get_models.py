@@ -29,6 +29,6 @@ class AIProvider:
             sql_prompt,
             max_tokens=150,
             temperature=0,
-            stop=[";", "\n\n", "<|im_end|>"]
+            stop=[";", "\n\n", "<|im_end|>", "<eos>"]
         )
         return output['choices'][0]['text'].strip()

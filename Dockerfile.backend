@@ -1,35 +1,63 @@
-# ── Stage 1: Builder ──────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+# ── Stage 1: Builder ──────────────────────────────────────────────────────────
+FROM nvidia/cuda:12.1.0-devel-ubuntu22.04 AS builder
 
+# Install Python 3.11 and build tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
     build-essential \
     cmake \
     git \
     libgomp1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install pip for Python 3.11 specifically
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
+ && ln -sf /usr/bin/python3.11 /usr/local/bin/python3
+
+# Symlink the CUDA stub so the linker can resolve libcuda at build time.
+# The stub lives in the devel image at this fixed path.
+RUN ln -sf /usr/local/cuda/lib64/stubs/libcuda.so \
+           /usr/local/cuda/lib64/stubs/libcuda.so.1 \
+ && echo "/usr/local/cuda/lib64/stubs" > /etc/ld.so.conf.d/cuda-stubs.conf \
+ && ldconfig
 
 WORKDIR /app
 
-ENV CMAKE_ARGS="-DGGML_BLAS=OFF -DGGML_CUDA=OFF -DGGML_NATIVE=OFF -DGGML_FLASH_ATTN=ON -DGGML_AVX=ON"
 ENV FORCE_CMAKE=1
+ENV CMAKE_ARGS="-DGGML_CUDA=ON -DGGML_NATIVE=OFF -DGGML_FLASH_ATTN=ON"
+ENV CMAKE_BUILD_PARALLEL_LEVEL=4
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3.11 -m pip install --no-cache-dir -r requirements.txt
 
-# ── Stage 2: Runtime ──────────────────────────────────────────────
-FROM python:3.11-slim
+# Remove stub symlink after build — runtime uses the real driver from the host
+RUN rm -f /etc/ld.so.conf.d/cuda-stubs.conf && ldconfig
 
-# libgomp1 is a runtime dependency for llama-cpp-python
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+# Install Python 3.11 on the CUDA runtime image
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
     libgomp1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python \
+ && ln -sf /usr/bin/python3.11 /usr/local/bin/python3
 
 WORKDIR /app/backend
 
-# Copy only installed packages from builder — no build tools included
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+# Copy installed Python packages from builder
+COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
-
 COPY backend/ .
 
 RUN mkdir -p \
@@ -44,5 +72,4 @@ RUN mkdir -p \
     ../database
 
 EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python3.11", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

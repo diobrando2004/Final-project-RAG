@@ -8,6 +8,8 @@ PARENT_STORE_PATH_SQLITE = str(ROOT_DIR / "parent_store_sqlite")
 QDRANT_DB_PATH           = str(ROOT_DIR / "qdrant_db")
 MODELS_DIR               = str(ROOT_DIR / "models")
 DOCUMENTS_DIR            = str(ROOT_DIR / "documents")
+SQL_CONNECTIONS_PATH     = str(ROOT_DIR / "sql_connections/connections.json")
+
 
 CHILD_CHUNK_SIZE    = 500
 CHILD_CHUNK_OVERLAP = 100
@@ -25,7 +27,7 @@ LLM_TEMPERATURE = 0.1
 LLM_N_CTX       = 8192
 LLM_N_THREADS   = 4
 LLM_N_BATCH     = 128
-
+LLM_N_GPU_LAYERS = -1
 CSV_DIR             = str(ROOT_DIR / "csv_data")
 CSV_DB_PATH         = str(ROOT_DIR / "database" / "csv_store.db")
 CSV_METADATA_DIR    = str(ROOT_DIR / "csv_metadata")

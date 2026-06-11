@@ -37,3 +37,25 @@ export async function reindexDocument(docName) {
   const res = await axios.post(`${BASE}/documents/${encodeURIComponent(docName)}/reindex`);
   return res.data.status;
 }
+export async function getDatabases() {
+  const res = await axios.get(`${BASE}/databases`);
+  return res.data;
+}
+ 
+export async function connectDatabase(dbName, connectionString) {
+  const res = await axios.post(`${BASE}/databases/connect`, {
+    db_name: dbName,
+    connection_string: connectionString,
+  });
+  return res.data.status;
+}
+ 
+export async function disconnectDatabase(dbName) {
+  const res = await axios.delete(`${BASE}/databases/${encodeURIComponent(dbName)}`);
+  return res.data.status;
+}
+ 
+export async function reloadDatabase(dbName) {
+  const res = await axios.post(`${BASE}/databases/${encodeURIComponent(dbName)}/reload`);
+  return res.data.status;
+}

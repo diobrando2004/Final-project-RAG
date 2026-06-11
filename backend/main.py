@@ -14,6 +14,7 @@ from rag_system import RAGsystem
 from document_manager import DocumentManager
 from retrieval import Retrieval, filter_by_score
 from rag_pipe_line import RAGPipeline
+from live_sql_manager import LiveSQLManager
 
 logger = logging.getLogger(__name__)
 class RAGExecutor:
@@ -31,6 +32,12 @@ class RAGExecutor:
             embedder=self.rag.embedder,
             db=self.doc_manager.csv_db
         )
+        self.sql_manager = LiveSQLManager(
+            embedder=self.rag.embedder,
+            llm=self.rag.llm,
+            summary_collection=self.summary_collection
+        )
+
 
     def _rewrite_query(self, query: str) -> str:
         try:
@@ -75,6 +82,15 @@ class RAGExecutor:
         if not source_filters:
             source_filters = ["Auto/All"]
         is_auto = source_filters == ["Auto/All"] or "Auto/All" in source_filters
+        if len(source_filters) == 1:
+            src = source_filters[0]
+            if "::" in src:
+                db_name, table_name = src.split("::", 1)
+                if db_name in self.sql_manager._connections:
+                    return self._ask_live_sql(query, db_name, table_name=table_name)
+            elif src in self.sql_manager._connections:
+                return self._ask_live_sql(query, src)
+
 
         if is_auto:
             result = self.retriever.hierarchical_search(query, chunk_limit=6)
@@ -146,7 +162,33 @@ class RAGExecutor:
             else:
                 return self._ask_pdf(query, results=entry["results"])
         return self._ask_combined(query, matched)
+    
+    def _ask_live_sql(self, query: str, db_name: str, table_name: str = None) -> tuple:
+        if table_name:
+            table_info = self.sql_manager.get_table_info(db_name, table_name)
+            if not table_info:
+                return f"Table '{table_name}' not found in '{db_name}'.", None, [], None
+        else:
+            table_info = self.sql_manager.get_best_table(db_name, query)
+            if not table_info:
+                return f"No tables found in '{db_name}'.", None, [], None
  
+        df, sql_used = self.sql_manager.generate_and_execute_sql(query, table_info, db_name)
+        print(f"Live SQL used: {sql_used}")
+ 
+        if isinstance(df, type(None)) or (hasattr(df, 'empty') and df is None):
+            return self.sql_manager.synthesize(query, None, error=sql_used), None, [], sql_used
+ 
+        if isinstance(sql_used, str) and sql_used.startswith("Error"):
+            return self.sql_manager.synthesize(query, None, error=sql_used), None, [], sql_used
+ 
+        summary = self.sql_manager.synthesize(query, df)
+        table = None
+        if df is not None and not df.empty and df.shape != (1, 1):
+            table = df.to_dict(orient="records")
+        return summary, table, [], sql_used
+
+
     def _ask_pdf(self, query: str, results=None, source_filter: str = None) -> tuple:
         if source_filter:
             results = self.retriever.search_child(
@@ -354,7 +396,7 @@ async def lifespan(app: FastAPI):
     executor = RAGExecutor()
     executor.startup_ingest()
     print("RAG system ready.")
-
+    executor.sql_manager.check_on_startup()
     yield  # server runs here
 
     print("Shutting down.")
@@ -517,6 +559,57 @@ def get_sources():
         csv_sources = []
     all_sources = sorted(set(pdf_sources + csv_sources))
     return {"sources": ["Auto/All"] + all_sources}
+
+# ── Live SQL database endpoints ───────────────────────────────────────────────
+
+class SQLConnectRequest(BaseModel):
+    db_name: str
+    connection_string: str
+
+class SQLDatabaseInfo(BaseModel):
+    name: str
+    dialect: str
+    summary: str
+    tables: list[str]
+    file_type: str = "sql"
+
+
+@app.post("/databases/connect", response_model=DeleteResponse)
+def connect_database(req: SQLConnectRequest):
+    if not req.db_name.strip() or not req.connection_string.strip():
+        raise HTTPException(status_code=400, detail="db_name and connection_string are required.")
+    try:
+        status = executor.sql_manager.connect(req.db_name.strip(), req.connection_string.strip())
+        return DeleteResponse(status=status)
+    except Exception as e:
+        logger.error(f"Connect DB error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/databases", response_model=list[SQLDatabaseInfo])
+
+def list_databases():
+    return executor.sql_manager.list_databases()
+
+
+@app.delete("/databases/{db_name}", response_model=DeleteResponse)
+def disconnect_database(db_name: str):
+    try:
+        status = executor.sql_manager.disconnect(db_name)
+        return DeleteResponse(status=status)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/databases/{db_name}/reload", response_model=DeleteResponse)
+def reload_database(db_name: str):
+    try:
+        status = executor.sql_manager.reload(db_name)
+        return DeleteResponse(status=status)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 if __name__ == "__main__":
     import uvicorn

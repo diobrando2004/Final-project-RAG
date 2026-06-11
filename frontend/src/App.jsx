@@ -9,13 +9,13 @@ export default function App() {
   const [docs, setDocs] = useState([]);
   const [sources, setSources] = useState(["Auto/All"]);
   const [selectedSources, setSelectedSources] = useState(["Auto/All"]);
+  const [selectedSqlSource, setSelectedSqlSource] = useState(null); // e.g. "mydb" or "mydb::table1"
 
   const refreshDocs = useCallback(async () => {
     try {
       const [docList, srcList] = await Promise.all([getDocuments(), getSources()]);
       setDocs(docList);
       setSources(srcList);
-      // If none of the selected sources exist anymore, reset to Auto/All
       setSelectedSources((prev) => {
         const valid = prev.filter((s) => s === "Auto/All" || srcList.includes(s));
         return valid.length > 0 ? valid : ["Auto/All"];
@@ -30,12 +30,17 @@ export default function App() {
   }, []);
 
   async function handleSend(query) {
+    // If a SQL source is selected, use it exclusively
+    const effectiveSources = selectedSqlSource
+      ? [selectedSqlSource]
+      : selectedSources;
+
     setMessages((prev) => [...prev, { role: "user", content: query, table: null }]);
     setThinking(true);
     const startTime = performance.now();
 
     try {
-      const res = await sendChat(query, selectedSources);
+      const res = await sendChat(query, effectiveSources);
       const elapsed = (performance.now() - startTime) / 1000;
       setMessages((prev) => [
         ...prev,
@@ -69,13 +74,15 @@ export default function App() {
         docs={docs}
         sources={sources}
         selectedSources={selectedSources}
-        onSourcesChange={setSelectedSources}
+        onSourcesChange={(s) => { setSelectedSources(s); setSelectedSqlSource(null); }}
+        selectedSqlSource={selectedSqlSource}
+        onSqlSourceChange={(s) => { setSelectedSqlSource(s); setSelectedSources(["Auto/All"]); }}
         onDocsChanged={refreshDocs}
       />
       <ChatPanel
         messages={messages}
         thinking={thinking}
-        selectedSources={selectedSources}
+        selectedSources={selectedSqlSource ? [selectedSqlSource] : selectedSources}
         onSend={handleSend}
       />
     </div>
