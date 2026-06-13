@@ -249,7 +249,9 @@ class RAGPipeline:
         else:
             intent_rule = (
                 "RULE: Use COUNT(*), SUM(), or AVG() for aggregates.\n"
+                "If selecting a non-aggregated column alongside an aggregate, or ordering by an aggregate, you MUST add GROUP BY on the non-aggregated column(s).\n"
                 f'Example: SELECT COUNT(*) FROM "{table_name}" WHERE "col" = \'value\''
+                f'Example: SELECT "col", SUM("value") FROM "{table_name}" GROUP BY "col" ORDER BY SUM("value") DESC LIMIT 1'
             )
             prefill = "SELECT"
 

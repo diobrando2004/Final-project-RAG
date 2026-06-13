@@ -9,7 +9,8 @@ export default function App() {
   const [docs, setDocs] = useState([]);
   const [sources, setSources] = useState(["Auto/All"]);
   const [selectedSources, setSelectedSources] = useState(["Auto/All"]);
-  const [selectedSqlSource, setSelectedSqlSource] = useState(null); // e.g. "mydb" or "mydb::table1"
+  const [selectedSqlDb, setSelectedSqlDb] = useState(null);       // one DB at a time (radio)
+  const [selectedSqlTables, setSelectedSqlTables] = useState([]); // multiple tables (checkboxes)
 
   const refreshDocs = useCallback(async () => {
     try {
@@ -25,44 +26,56 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    refreshDocs();
-  }, []);
+  useEffect(() => { refreshDocs(); }, []);
+
+  function handleSqlDbChange(dbName) {
+    if (selectedSqlDb === dbName) {
+      setSelectedSqlDb(null);
+      setSelectedSqlTables([]);
+    } else {
+      setSelectedSqlDb(dbName);
+      setSelectedSqlTables([]);
+      setSelectedSources(["Auto/All"]);
+    }
+  }
+
+  function handleSqlTableToggle(tableKey) {
+    setSelectedSqlTables(prev =>
+      prev.includes(tableKey)
+        ? prev.filter(t => t !== tableKey)
+        : [...prev, tableKey]
+    );
+    setSelectedSources(["Auto/All"]);
+  }
+
+  const effectiveSources = selectedSqlTables.length > 0
+    ? selectedSqlTables
+    : selectedSqlDb
+    ? [selectedSqlDb]
+    : selectedSources;
 
   async function handleSend(query) {
-    // If a SQL source is selected, use it exclusively
-    const effectiveSources = selectedSqlSource
-      ? [selectedSqlSource]
-      : selectedSources;
-
     setMessages((prev) => [...prev, { role: "user", content: query, table: null }]);
     setThinking(true);
     const startTime = performance.now();
-
     try {
       const res = await sendChat(query, effectiveSources);
       const elapsed = (performance.now() - startTime) / 1000;
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: res.answer,
-          table: res.table || null,
-          sources: res.sources || [],
-          elapsed,
-        },
-      ]);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: res.answer,
+        table: res.table || null,
+        sources: res.sources || [],
+        elapsed,
+      }]);
     } catch (err) {
       const elapsed = (performance.now() - startTime) / 1000;
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `Error: ${err.response?.data?.detail || err.message}`,
-          table: null,
-          elapsed,
-        },
-      ]);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: `Error: ${err.response?.data?.detail || err.message}`,
+        table: null,
+        elapsed,
+      }]);
     } finally {
       setThinking(false);
     }
@@ -74,15 +87,17 @@ export default function App() {
         docs={docs}
         sources={sources}
         selectedSources={selectedSources}
-        onSourcesChange={(s) => { setSelectedSources(s); setSelectedSqlSource(null); }}
-        selectedSqlSource={selectedSqlSource}
-        onSqlSourceChange={(s) => { setSelectedSqlSource(s); setSelectedSources(["Auto/All"]); }}
+        onSourcesChange={(s) => { setSelectedSources(s); setSelectedSqlDb(null); setSelectedSqlTables([]); }}
+        selectedSqlDb={selectedSqlDb}
+        selectedSqlTables={selectedSqlTables}
+        onSqlDbChange={handleSqlDbChange}
+        onSqlTableToggle={handleSqlTableToggle}
         onDocsChanged={refreshDocs}
       />
       <ChatPanel
         messages={messages}
         thinking={thinking}
-        selectedSources={selectedSqlSource ? [selectedSqlSource] : selectedSources}
+        selectedSources={effectiveSources}
         onSend={handleSend}
       />
     </div>

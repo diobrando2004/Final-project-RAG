@@ -1,17 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 import { uploadDocuments, deleteDocument, reindexDocument, getDatabases, connectDatabase, disconnectDatabase, reloadDatabase } from "../api";
 
-const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls","docx"];
+const ALLOWED_EXTS = [".pdf", ".md", ".csv", ".xlsx", ".xls", ".docx", ".db", ".sqlite"];
 
-export default function Sidebar({ docs, sources, selectedSources, onSourcesChange, selectedSqlSource, onSqlSourceChange, onDocsChanged }) {
+export default function Sidebar({ docs, sources, selectedSources, onSourcesChange, selectedSqlDb, selectedSqlTables, onSqlDbChange, onSqlTableToggle, onDocsChanged }) {
   const fileInputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [reindexing, setReindexing] = useState(null);
   const [status, setStatus] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
 
-  // Database state
   const [databases, setDatabases] = useState([]);
   const [dbName, setDbName] = useState("");
   const [dbConnStr, setDbConnStr] = useState("");
@@ -70,56 +70,23 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
       setReloadingDb(null);
     }
   }
-  const [filterOpen, setFilterOpen] = useState(false);
 
-  // ── Source filter logic ─────────────────────────────────────────────
   function toggleSource(source) {
-    if (source === "Auto/All") {
-      onSourcesChange(["Auto/All"]);
-      return;
-    }
-    // Toggling a specific source
+    if (source === "Auto/All") { onSourcesChange(["Auto/All"]); return; }
     let next = selectedSources.filter((s) => s !== "Auto/All");
-    if (next.includes(source)) {
-      next = next.filter((s) => s !== source);
-    } else {
-      next = [...next, source];
-    }
-    // If nothing selected, fall back to Auto/All
+    next = next.includes(source) ? next.filter((s) => s !== source) : [...next, source];
     onSourcesChange(next.length > 0 ? next : ["Auto/All"]);
   }
 
-  function isSelected(source) {
-    return selectedSources.includes(source);
-  }
-
-  const isAuto = selectedSources.includes("Auto/All");
-  const filterLabel = isAuto
-    ? "Auto/All"
-    : selectedSources.length === 1
-    ? selectedSources[0]
-    : `${selectedSources.length} sources`;
-
-  // ── File selection ──────────────────────────────────────────────────
   function handleFiles(files) {
     const valid = Array.from(files).filter(
       (f) => ALLOWED_EXTS.some((ext) => f.name.toLowerCase().endsWith(ext))
     );
-    if (valid.length === 0) {
-      setStatus("Only PDF, Markdown, CSV and Excel files are supported.");
-      return;
-    }
+    if (valid.length === 0) { setStatus("Unsupported file type."); return; }
     setPendingFiles(valid);
     setStatus(`${valid.length} file(s) ready to upload.`);
   }
 
-  function handleDrop(e) {
-    e.preventDefault();
-    setDragOver(false);
-    handleFiles(e.dataTransfer.files);
-  }
-
-  // ── Upload ──────────────────────────────────────────────────────────
   async function handleUpload() {
     if (pendingFiles.length === 0) return;
     setUploading(true);
@@ -136,7 +103,6 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
     }
   }
 
-  // ── Reindex ───────────────────────────────────────────────────────────
   async function handleReindex(docName) {
     setReindexing(docName);
     setStatus(`Reindexing "${docName}"…`);
@@ -151,7 +117,6 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
     }
   }
 
-  // ── Delete ──────────────────────────────────────────────────────────
   async function handleDelete(docName) {
     if (!confirm(`Delete "${docName}"? This cannot be undone.`)) return;
     try {
@@ -163,6 +128,11 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
     }
   }
 
+  const isAuto = selectedSources.includes("Auto/All");
+  const filterLabel = isAuto ? "Auto/All"
+    : selectedSources.length === 1 ? selectedSources[0]
+    : `${selectedSources.length} sources`;
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -172,26 +142,18 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
 
       <div className="sidebar-body">
 
-        {/* Source filter */}
+        {/* Source filter — PDF/CSV only */}
         <div>
           <div className="sidebar-section-title">Source filter</div>
-          <button
-            className="filter-toggle"
-            onClick={() => setFilterOpen((o) => !o)}
-          >
+          <button className="filter-toggle" onClick={() => setFilterOpen((o) => !o)}>
             <span className="filter-toggle-label">{filterLabel}</span>
             <span className="filter-toggle-arrow">{filterOpen ? "▲" : "▼"}</span>
           </button>
-
           {filterOpen && (
             <div className="filter-dropdown">
               {sources.map((src) => (
                 <label key={src} className="filter-option">
-                  <input
-                    type="checkbox"
-                    checked={isSelected(src)}
-                    onChange={() => toggleSource(src)}
-                  />
+                  <input type="checkbox" checked={selectedSources.includes(src)} onChange={() => toggleSource(src)} />
                   <span className="filter-option-label">{src}</span>
                 </label>
               ))}
@@ -207,50 +169,28 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
             onClick={() => fileInputRef.current?.click()}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
+            onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.md,.csv,.xlsx,.xls"
-              multiple
-              onChange={(e) => handleFiles(e.target.files)}
-            />
+            <input ref={fileInputRef} type="file" accept=".pdf,.md,.csv,.xlsx,.xls,.docx,.db,.sqlite" multiple onChange={(e) => handleFiles(e.target.files)} />
             <div className="upload-icon">📄</div>
-            <div className="upload-label">
-              Drop files or <span>click to browse</span>
-              <br />PDF, Markdown, CSV and Excel supported
-            </div>
+            <div className="upload-label">Drop files or <span>click to browse</span><br />PDF, Markdown, CSV, Excel, Word supported</div>
           </div>
-
           {pendingFiles.length > 0 && (
             <div style={{ marginTop: 8, fontSize: 11, color: "var(--text-secondary)" }}>
-              {pendingFiles.map((f) => (
-                <div key={f.name} style={{ fontFamily: "var(--font-mono)" }}>• {f.name}</div>
-              ))}
+              {pendingFiles.map((f) => <div key={f.name} style={{ fontFamily: "var(--font-mono)" }}>• {f.name}</div>)}
             </div>
           )}
-
           <div style={{ marginTop: 8 }}>
-            <button
-              className="btn btn-primary"
-              onClick={handleUpload}
-              disabled={uploading || pendingFiles.length === 0}
-            >
+            <button className="btn btn-primary" onClick={handleUpload} disabled={uploading || pendingFiles.length === 0}>
               {uploading ? "Ingesting…" : "⬆ Upload & Ingest"}
             </button>
           </div>
-
-          {status && (
-            <div className="status-msg" style={{ marginTop: 8 }}>{status}</div>
-          )}
+          {status && <div className="status-msg" style={{ marginTop: 8 }}>{status}</div>}
         </div>
 
         {/* Document list */}
         <div>
-          <div className="sidebar-section-title">
-            Ingested documents ({docs.length})
-          </div>
+          <div className="sidebar-section-title">Ingested documents ({docs.length})</div>
           {docs.length === 0 ? (
             <div className="doc-empty">No documents yet.<br />Upload files above.</div>
           ) : (
@@ -259,21 +199,10 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
                 <div className="doc-item" key={doc.name} title={doc.summary}>
                   <span className="doc-item-type">{doc.file_type === "csv" ? "csv" : "pdf"}</span>
                   <span className="doc-item-name">{doc.name}</span>
-                  <button
-                    className="doc-action-btn"
-                    onClick={() => handleReindex(doc.name)}
-                    disabled={reindexing === doc.name}
-                    title="Reindex document"
-                  >
+                  <button className="doc-action-btn" onClick={() => handleReindex(doc.name)} disabled={reindexing === doc.name} title="Reindex">
                     {reindexing === doc.name ? "…" : "↺"}
                   </button>
-                  <button
-                    className="doc-delete-btn"
-                    onClick={() => handleDelete(doc.name)}
-                    title="Delete document"
-                  >
-                    ✕
-                  </button>
+                  <button className="doc-delete-btn" onClick={() => handleDelete(doc.name)} disabled={reindexing === doc.name} title="Delete">✕</button>
                 </div>
               ))}
             </div>
@@ -284,27 +213,14 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
         <div>
           <div className="sidebar-section-title">Live SQL Databases</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <input
-              className="chat-input"
-              style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
-              placeholder="Database name (e.g. my_postgres)"
-              value={dbName}
-              onChange={(e) => setDbName(e.target.value)}
-              disabled={dbConnecting}
-            />
-            <input
-              className="chat-input"
-              style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
-              placeholder="postgresql://user:pass@host:5432/db"
-              value={dbConnStr}
-              onChange={(e) => setDbConnStr(e.target.value)}
-              disabled={dbConnecting}
-            />
-            <button
-              className="btn btn-primary"
-              onClick={handleConnectDb}
-              disabled={dbConnecting || !dbName.trim() || !dbConnStr.trim()}
-            >
+            <input className="chat-input" style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
+              placeholder="Database name (e.g. my_postgres)" value={dbName}
+              onChange={(e) => setDbName(e.target.value)} disabled={dbConnecting} />
+            <input className="chat-input" style={{ fontSize: 11, padding: "4px 8px", height: "auto" }}
+              placeholder="postgresql://user:pass@host:5432/db" value={dbConnStr}
+              onChange={(e) => setDbConnStr(e.target.value)} disabled={dbConnecting} />
+            <button className="btn btn-primary" onClick={handleConnectDb}
+              disabled={dbConnecting || !dbName.trim() || !dbConnStr.trim()}>
               {dbConnecting ? "Connecting…" : "⚡ Connect"}
             </button>
           </div>
@@ -312,8 +228,9 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
           {databases.length > 0 && (
             <div style={{ marginTop: 8 }}>
               {databases.map((db) => (
-                <div key={db.name} style={{ marginBottom: 4 }}>
-                  {/* Database row */}
+                <div key={db.name} style={{ marginBottom: 6 }}>
+
+                  {/* Database row — radio button, one at a time */}
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <button
                       style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", fontSize: 10, padding: "0 2px", flexShrink: 0 }}
@@ -324,32 +241,20 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
                     <label className="filter-option" style={{ flex: 1, margin: 0 }}>
                       <input
                         type="radio"
-                        name="sqlSource"
-                        checked={selectedSqlSource === db.name}
-                        onChange={() => onSqlSourceChange(selectedSqlSource === db.name ? null : db.name)}
+                        name="sqlDb"
+                        checked={selectedSqlDb === db.name}
+                        onChange={() => onSqlDbChange(db.name)}
                       />
                       <span className="filter-option-label" style={{ fontWeight: 600 }}>{db.name}</span>
                       <span style={{ fontSize: 10, color: "var(--text-muted)", marginLeft: 4 }}>{db.dialect}</span>
                     </label>
-                    <button
-                      className="doc-action-btn"
-                      onClick={() => handleReloadDb(db.name)}
-                      disabled={reloadingDb === db.name}
-                      title="Reload database"
-                    >
+                    <button className="doc-action-btn" onClick={() => handleReloadDb(db.name)} disabled={reloadingDb === db.name} title="Reload">
                       {reloadingDb === db.name ? "…" : "↺"}
                     </button>
-                    <button
-                      className="doc-delete-btn"
-                      onClick={() => handleDisconnectDb(db.name)}
-                      disabled={reloadingDb === db.name}
-                      title="Disconnect"
-                    >
-                      ✕
-                    </button>
+                    <button className="doc-delete-btn" onClick={() => handleDisconnectDb(db.name)} disabled={reloadingDb === db.name} title="Disconnect">✕</button>
                   </div>
 
-                  {/* Tables (expanded) */}
+                  {/* Table rows — checkboxes, multiple allowed */}
                   {expandedDbs[db.name] && db.tables.map((tbl) => {
                     const key = `${db.name}::${tbl}`;
                     return (
@@ -357,10 +262,9 @@ export default function Sidebar({ docs, sources, selectedSources, onSourcesChang
                         <span style={{ color: "var(--text-muted)", marginRight: 4, fontSize: 11 }}>└</span>
                         <label className="filter-option" style={{ flex: 1, margin: 0 }}>
                           <input
-                            type="radio"
-                            name="sqlSource"
-                            checked={selectedSqlSource === key}
-                            onChange={() => onSqlSourceChange(selectedSqlSource === key ? null : key)}
+                            type="checkbox"
+                            checked={(selectedSqlTables || []).includes(key)}
+                            onChange={() => onSqlTableToggle(key)}
                           />
                           <span className="filter-option-label">{tbl}</span>
                         </label>

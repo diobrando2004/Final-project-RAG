@@ -7,11 +7,13 @@ import logging
 import sqlite3
 from database import DataManager
 from indexer import SemanticIndexer
+import sqlite3
+
 logger = logging.getLogger(__name__)
 
  
 PDF_EXTENSIONS = {".pdf", ".md", ".docx"}
-CSV_EXTENSIONS = {".csv", ".xlsx", ".xls"}
+CSV_EXTENSIONS = {".csv", ".xlsx", ".xls", ".db", ".sqlite"}
 class DocumentManager:
     def __init__(self,rag_system):
         self.rag_system = rag_system
@@ -177,67 +179,94 @@ class DocumentManager:
         print(f"Ingested PDF: '{doc_name}'")
         return "added"
     
-    def _ingest_csv(self, csv_path: str, reset: bool = False) -> str:
-        table_name = Path(csv_path).stem.lower().replace("-", "_").replace(" ", "_")
+    def _ingest_csv(self, file_path: str, reset: bool = False) -> str:
+        base_name = Path(file_path).stem.lower().replace("-", "_").replace(" ", "_")
         import re as _re
-        table_name = _re.sub(r"[^a-z0-9_]", "", table_name)
- 
-        check = self.csv_db.execute(
-            "SELECT 1 FROM system_metadata WHERE table_name = ?", [table_name]
-        ).fetchone()
-        if check:
-            if not reset:
-                print(f"Skipping '{table_name}' — already indexed.")
-                return "skipped"
-            print(f"Reindexing '{table_name}' — deleting first.")
-            self._delete_csv(table_name)
- 
-        ext = Path(csv_path).suffix.lower()
-        if ext == ".csv":
-            source_fn = f"read_csv_auto('{csv_path}')"
+        base_name = _re.sub(r"[^a-z0-9_]", "", base_name)
+        ext = Path(file_path).suffix.lower()
+        tables_to_process = []
+        if ext in {".db", ".sqlite"}:
+            try:
+                self.csv_db.execute("INSTALL sqlite; LOAD sqlite;")
+            except Exception:
+                pass
+            with sqlite3.connect(file_path) as conn:
+                tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+
+            for (t_name,) in tables:
+                clean_t = _re.sub(r"[^a-z0-9_]", "", t_name.lower())
+                final_table_name = f"{base_name}_{clean_t}"
+                source_fn = f"sqlite_scan('{file_path}', '{t_name}')"
+                tables_to_process.append((source_fn, final_table_name))
         else:
-            self._load_spatial()
-            source_fn = f"st_read('{csv_path}')"
- 
-        cols = self.csv_db.execute(
-            f"SELECT * FROM {source_fn} LIMIT 0"
-        ).df().columns
-        clean_cols = ", ".join([
-            f'"{c}" AS {c.lower().replace(" ", "_").replace("-", "_")}'
-            for c in cols
-        ])
-        self.csv_db.execute(
-            f'CREATE TABLE IF NOT EXISTS "{table_name}" '
-            f'AS SELECT {clean_cols} FROM {source_fn}'
-        )
- 
-        snippet_str = self.csv_db.execute(
-            f'SELECT * FROM "{table_name}" LIMIT 5'
-        ).df().to_string(index=False)
-        summary = self._generate_csv_summary(table_name, snippet_str)
- 
-        vector = list(next(self.rag_system.embedder.embed([summary])))
-        self.csv_db.execute(
-            "INSERT OR REPLACE INTO system_metadata VALUES (?, ?, ?)",
-            [table_name, summary, vector]
-        )
+            if ext == ".csv":
+                source_fn = f"read_csv_auto('{file_path}')"
+            else:
+                self._load_spatial()
+                source_fn = f"st_read('{file_path}')"
+            tables_to_process.append((source_fn, base_name))
+        status = "skipped"
+        for source_fn, table_name in tables_to_process:
+            check = self.csv_db.execute(
+                "SELECT 1 FROM system_metadata WHERE table_name = ?", [table_name]
+            ).fetchone()
+            if check:
+                if not reset:
+                    print(f"Skipping '{table_name}' — already indexed.")
+                    continue
+                print(f"Reindexing '{table_name}' — deleting first.")
+                self._delete_csv(table_name)
 
-        self._save_to_qdrant_summary(table_name, summary, file_type="csv")
-
-        self.csv_indexer.build_custom_value_index(self.csv_db.conn)
+            cols = self.csv_db.execute(
+                f"SELECT * FROM {source_fn} LIMIT 0"
+            ).df().columns
+            clean_cols = ", ".join([
+                f'"{c}" AS {c.lower().replace(" ", "_").replace("-", "_")}'
+                for c in cols
+            ])
+            self.csv_db.execute(
+                f'CREATE TABLE IF NOT EXISTS "{table_name}" '
+                f'AS SELECT {clean_cols} FROM {source_fn}'
+            )
  
-        print(f"Ingested CSV: '{table_name}'")
-        return "added"
+            snippet_str = self.csv_db.execute(
+                f'SELECT * FROM "{table_name}" LIMIT 5'
+            ).df().to_string(index=False)
+            summary = self._generate_csv_summary(table_name, snippet_str)
+ 
+            vector = list(next(self.rag_system.embedder.embed([summary])))
+            self.csv_db.execute(
+                "INSERT OR REPLACE INTO system_metadata VALUES (?, ?, ?)",
+                [table_name, summary, vector]
+            )
+
+            self._save_to_qdrant_summary(table_name, summary, file_type="csv")
+
+            self.csv_indexer.build_custom_value_index(self.csv_db.conn)
+            print(f"Ingested tabular data: '{table_name}'")
+            status = "added"
+    
+        print(f"Ingested CSV/db: '{base_name}'")
+        return status
 
     def delete_document(self, doc_name: str) -> str:
         doc_name = Path(doc_name).stem
+        import re as _re
+        base_name = _re.sub(r"[^a-z0-9_]", "", doc_name.lower().replace("-", "_").replace(" ", "_"))
+        matching_tables = self.csv_db.execute(
+            "SELECT table_name FROM system_metadata WHERE table_name = ? OR table_name LIKE ?", 
+            [doc_name, f"{base_name}_%"]
+        ).fetchall()
  
-        is_csv = self.csv_db.execute(
-            "SELECT 1 FROM system_metadata WHERE table_name = ?", [doc_name]
-        ).fetchone()
- 
-        if is_csv:
-            return self._delete_csv(doc_name)
+        if matching_tables:
+            errors = []
+            for (t_name,) in matching_tables:
+                res = self._delete_csv(t_name)
+                if "errors" in res.lower():
+                    errors.append(res)
+            if errors:
+                return f"Deleted with some errors:\n" + "\n".join(errors)
+            return f"'{doc_name}' fully removed."
         else:
             return self._delete_pdf(doc_name)
         
@@ -356,30 +385,29 @@ class DocumentManager:
 
     def reindex_document(self, doc_name: str) -> str:
         doc_name = Path(doc_name).stem
- 
+        is_tabular = False
+        original_path = None
         is_csv = self.csv_db.execute(
             "SELECT 1 FROM system_metadata WHERE table_name = ?", [doc_name]
         ).fetchone()
- 
-        if is_csv:
-            search_dir = Path(config.CSV_DIR)
-            extensions = CSV_EXTENSIONS
-        else:
-            search_dir = Path(config.DOCUMENTS_DIR)
-            extensions = PDF_EXTENSIONS
- 
-        original_path = None
-        for ext in extensions:
-            candidate = search_dir / f"{doc_name}{ext}"
+
+        for ext in CSV_EXTENSIONS:
+            candidate = Path(config.CSV_DIR) / f"{doc_name}{ext}"
             if candidate.exists():
                 original_path = str(candidate)
+                is_tabular = True
                 break
+        if not original_path:
+            for ext in PDF_EXTENSIONS:
+                candidate = Path(config.DOCUMENTS_DIR) / f"{doc_name}{ext}"
+                if candidate.exists():
+                    original_path = str(candidate)
+                    break
+ 
  
         if not original_path:
             return f"Cannot reindex '{doc_name}' — original file not found."
- 
-        ext = Path(original_path).suffix.lower()
-        if ext in CSV_EXTENSIONS:
+        if is_tabular:
             result = self._ingest_csv(original_path, reset=True)
         else:
             result = self._ingest_pdf(original_path, reset=True)
@@ -388,7 +416,7 @@ class DocumentManager:
             return f"'{doc_name}' reindexed successfully."
         return f"'{doc_name}' reindex failed."
 
-    
+
     def list_documents(self) -> list[dict]:
         docs = []
  

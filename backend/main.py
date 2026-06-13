@@ -79,24 +79,30 @@ class RAGExecutor:
         query = self._rewrite_query(query)
         print(f"new query: {query}")
         self.llm.reset()
+        print(source_filters)
         if not source_filters:
             source_filters = ["Auto/All"]
         is_auto = source_filters == ["Auto/All"] or "Auto/All" in source_filters
-        if len(source_filters) == 1:
-            src = source_filters[0]
+        sql_dbs: dict[str, list[str]] = {}
+        for src in source_filters:
             if "::" in src:
                 db_name, table_name = src.split("::", 1)
                 if db_name in self.sql_manager._connections:
-                    return self._ask_live_sql(query, db_name, table_name=table_name)
+                    sql_dbs.setdefault(db_name, []).append(table_name)
             elif src in self.sql_manager._connections:
-                return self._ask_live_sql(query, src)
+                sql_dbs.setdefault(src, [])
+        if sql_dbs:
+            db_name, tables = next(iter(sql_dbs.items()))
+            if len(tables) == 1:
+                return self._ask_live_sql(query, db_name, table_name=tables[0])
+            return self._ask_live_sql(query, db_name, table_filter=tables or None)
 
 
         if is_auto:
             result = self.retriever.hierarchical_search(query, chunk_limit=6)
             matched = [result] if isinstance(result, dict) else result
             if not matched:
-                return "I couldn't find any relevant information.", None
+                return "I couldn't find any relevant information.", None, [], None
             if len(matched) == 1:
                 entry = matched[0]
                 if entry["file_type"] == "csv":
@@ -154,7 +160,7 @@ class RAGExecutor:
                 print(f"Dropping pinned CSV '{src}' — score {score:.3f} below threshold {config.SUMMARY_MIN_SCORE}")
  
         if not matched:
-            return "I couldn't find any relevant information in the selected documents.", None
+            return "I couldn't find any relevant information in the selected documents.", None, [], None
         if len(matched) == 1:
             entry = matched[0]
             if entry["file_type"] == "csv":
@@ -163,13 +169,13 @@ class RAGExecutor:
                 return self._ask_pdf(query, results=entry["results"])
         return self._ask_combined(query, matched)
     
-    def _ask_live_sql(self, query: str, db_name: str, table_name: str = None) -> tuple:
+    def _ask_live_sql(self, query: str, db_name: str, table_name: str = None, table_filter: list[str] = None) -> tuple:
         if table_name:
             table_info = self.sql_manager.get_table_info(db_name, table_name)
             if not table_info:
                 return f"Table '{table_name}' not found in '{db_name}'.", None, [], None
         else:
-            table_info = self.sql_manager.get_best_table(db_name, query)
+            table_info = self.sql_manager.get_best_table(db_name, query, table_filter)
             if not table_info:
                 return f"No tables found in '{db_name}'.", None, [], None
  
@@ -195,7 +201,7 @@ class RAGExecutor:
                 query, limit=6, source_filter=source_filter
             )
         if not results:
-            return "I couldn't find any relevant information in the documents.", None
+            return "I couldn't find any relevant information in the documents.", None, [], None
  
         parent_ids = list({
             doc.metadata.get("parent_id")
@@ -264,20 +270,19 @@ class RAGExecutor:
     def _ask_combined(self, query: str, matched: list[dict]) -> tuple:
         pdf_sources_structured = []
         all_sqls = []
-        # --- csv_only fast path (unchanged) ---
-        csv_only = all(e["file_type"] == "csv" for e in matched)
-        if csv_only:
-            answers, all_tables = [], []
-            for entry in matched:
-                answer, table, _, sql = self._ask_csv(query, entry["source"])
-                all_sqls.append(sql)
-                if answer and "couldn't find" not in answer and "Error" not in answer:
-                    answers.append(f"[{entry['source']}]: {answer}")
-                if table:
-                    all_tables.append(table)
-            if not answers:
-                return "I couldn't find any relevant information.", None, []
-            return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, [], all_sqls[0] if all_sqls else None
+        # csv_only = all(e["file_type"] == "csv" for e in matched)
+        # if csv_only:
+        #     answers, all_tables = [], []
+        #     for entry in matched:
+        #         answer, table, _, sql = self._ask_csv(query, entry["source"])
+        #         all_sqls.append(sql)
+        #         if answer and "couldn't find" not in answer and "Error" not in answer:
+        #             answers.append(f"[{entry['source']}]: {answer}")
+        #         if table:
+        #             all_tables.append(table)
+        #     if not answers:
+        #         return "I couldn't find any relevant information.", None, []
+        #     return "\n\n".join(answers), all_tables[0] if len(all_tables) == 1 else None, [], all_sqls[0] if all_sqls else None
  
         # --- MAP: generate one answer per source independently ---
         sub_answers = []
@@ -472,7 +477,7 @@ MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024
 @app.post("/documents/upload")
 async def upload_documents(files: list[UploadFile] = File(...)):
     pdf_extensions = {".pdf", ".md", ".docx"}
-    csv_extensions = {".csv", ".xlsx", ".xls"}
+    csv_extensions = {".csv", ".xlsx", ".xls",".db", ".sqlite"}
     allowed = pdf_extensions | csv_extensions
     saved_paths = []
  

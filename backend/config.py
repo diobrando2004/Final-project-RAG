@@ -44,7 +44,7 @@ SCAN_WORDS = {
     "sample", "preview", "give me", "print"
 }
 
-SUMMARY_MIN_SCORE = 0.4
+SUMMARY_MIN_SCORE = 0.3
 SUMMARY_SCORE_GAP = 0.1 
 SUMMARY_TOP_K     = 3
 CHUNK_SCORE_GAP   = 0.25

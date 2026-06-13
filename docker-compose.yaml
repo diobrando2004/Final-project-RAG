@@ -16,6 +16,7 @@ services:
       - ./csv_table_index:/app/csv_table_index
       - ./database:/app/database
       - ./hf_cache:/root/.cache/huggingface  
+      - ./sql_connections:/app/sql_connections
     environment:
       - PYTHONUNBUFFERED=1
       - LLAMA_CPP_USE_MMAP=1

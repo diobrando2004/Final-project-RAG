@@ -244,17 +244,20 @@ class LiveSQLManager:
             "db_name": db_name
         }
 
-    def get_best_table(self, db_name: str, query: str) -> Optional[dict]:
+    def get_best_table(self, db_name: str, query: str, table_filter: list[str] = None) -> Optional[dict]:
         """Pick the most relevant table for a query using embedding similarity."""
         if db_name not in self._connections:
             return None
         tables = self._connections[db_name]["tables"]
         if not tables:
             return None
+        if table_filter:
+            tables = {k: v for k, v in tables.items() if k in table_filter}
+            if not tables:
+                return None
         if len(tables) == 1:
             table_name = list(tables.keys())[0]
             return self.get_table_info(db_name, table_name)
-
         query_emb = list(self.embedder.embed([query]))[0]
         best_name, best_score = None, -1.0
         import numpy as np
@@ -264,6 +267,10 @@ class LiveSQLManager:
             score = float(np.dot(q, t) / (np.linalg.norm(q) * np.linalg.norm(t) + 1e-10))
             if score > best_score:
                 best_score, best_name = score, table_name
+
+        if best_score < config.SUMMARY_MIN_SCORE:
+            print(f"Best table '{best_name}' score {best_score:.2f} below threshold {config.SUMMARY_MIN_SCORE}")
+            return None
         return self.get_table_info(db_name, best_name)
 
     def generate_and_execute_sql(self, query: str, table_info: dict, db_name: str):
@@ -289,8 +296,19 @@ class LiveSQLManager:
         q_lower = query.lower()
         is_agg = any(w in q_lower for w in config.CSV_AGGREGATE_WORDS)
         if is_agg:
-            prefill = f'SELECT COUNT(*) FROM "{table_name}" WHERE'
+            intent_rule = (
+                "RULE: Use COUNT(*), SUM(), or AVG() for aggregates.\n"
+                "If selecting a non-aggregated column alongside an aggregate, "
+                "or ordering by an aggregate, you MUST add GROUP BY on the non-aggregated column(s).\n"
+                f'Example: SELECT COUNT(*) FROM "{table_name}" WHERE "col" = \'value\'\n'
+                f'Example: SELECT "col", SUM("value") FROM "{table_name}" GROUP BY "col" ORDER BY SUM("value") DESC LIMIT 1'
+            )
+            prefill = "SELECT"
         else:
+            intent_rule = (
+                "RULE: Use SELECT * with LIMIT 3 for lookups.\n"
+                f'Example: SELECT * FROM "{table_name}" WHERE "name" ILIKE \'%value%\' LIMIT 3'
+            )
             prefill = f'SELECT * FROM "{table_name}" WHERE'
 
         prompt = (
@@ -301,7 +319,9 @@ class LiveSQLManager:
             "2. Use single quotes for string values.\n"
             "3. Use ILIKE for text searches if PostgreSQL, LIKE otherwise.\n"
             "4. Output ONLY the SQL. No explanations.\n"
-            f'5. The ONLY table you may query is "{table_name}".\n\n'
+            "5. Filter ONLY by criteria mentioned in the question.\n"
+            f'6. The ONLY table you may query is "{table_name}".\n\n'
+            f"7. {intent_rule}\n\n"
             "### Schema\n"
             f"{col_schema}\n\n"
             "### Sample\n"
@@ -314,6 +334,13 @@ class LiveSQLManager:
         self.llm.reset()
         output = self.ai.generate_sql(prompt)
         sql = f"{prefill} {output}"
+        sql = self.deduplicate_sql(sql)
+
+        col_names = set(columns.keys())
+        for match in re.findall(r'"([^"]*)"', sql):
+            if match != table_name and match not in col_names:
+                sql = sql.replace(f'"{match}"', f"'{match}'")
+
         if dialect == "mysql":
             sql = re.sub(r'"([^"]*)"', r'`\1`', sql)
         # Guard: ensure correct table name in SQL
@@ -367,3 +394,15 @@ class LiveSQLManager:
             stop=["<|im_end|>"]
         )
         return response["choices"][0]["message"]["content"].strip()
+    
+    
+    @staticmethod
+    def deduplicate_sql(sql):
+        sql = re.split(r'```', sql)[0].strip()
+        sql = re.sub(r'(?i)WHERE\s+SELECT', 'WHERE', sql)
+        for word in ["SELECT", "FROM", "WHERE"]:
+            sql = re.sub(rf'\b({word})\s+\1\b', r'\1', sql, flags=re.IGNORECASE)
+        lines = sql.split('\n')
+        if len(lines) > 1 and lines[0].strip() == lines[1].strip():
+            sql = lines[0]
+        return sql

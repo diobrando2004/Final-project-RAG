@@ -62,6 +62,7 @@ COPY backend/ .
 
 RUN mkdir -p \
     ../models \
+    ../sql_connections \
     ../documents \
     ../csv_data \
     ../markdown_docs \
