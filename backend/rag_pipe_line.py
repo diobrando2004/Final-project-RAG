@@ -15,7 +15,7 @@ DATA_FILES = [
 ]
 
 
-class RAGPipeline:
+class CSVPipeline:
     def __init__(self, llm, embedder, db=None):
         # Use shared connection if provided, otherwise open own connection
         self.db = db if db is not None else DataManager(config.CSV_DB_PATH, config.CSV_METADATA_DIR)
@@ -336,9 +336,7 @@ class RAGPipeline:
         except Exception:
             return False
 
-    # ------------------------------------------------------------------
-    # Synthesis
-    # ------------------------------------------------------------------
+
 
     def synthesize(self, user_query, result, error=None):
         print(result)
@@ -387,7 +385,7 @@ class RAGPipeline:
     # Standalone run loop
     # ------------------------------------------------------------------
 
-    def run(self):
+    def run1(self):
         print("\n--- Setup ---")
         self._setup()
 

@@ -15,6 +15,27 @@ try:
     pymysql.install_as_MySQLdb()
 except ImportError:
     pass
+
+def filter_by_score(
+    candidates: list[tuple[str, float]],
+    min_score: float,
+    gap: float,
+    label: str = "source"
+) -> list[str]:
+
+    qualified = [(src, s) for src, s in candidates if s >= min_score]
+    if not qualified:
+        return []
+    best = max(s for _, s in qualified)
+    kept, dropped = [], []
+    for src, s in qualified:
+        if best - s <= gap:
+            kept.append(src)
+        else:
+            dropped.append((src, s))
+    for src, s in dropped:
+        print(f"Dropping {label} '{src}' — score {s:.3f} too far behind top {best:.3f}")
+    return kept
 class LiveSQLManager:
     
     def __init__(self, embedder, llm, summary_collection):
@@ -111,6 +132,7 @@ class LiveSQLManager:
         snippet = "\n".join(f"{k}: {v}" for k, v in columns.items())
         prompt = (
             "### Task\n"
+            f"The table name is '{table_name}'.\n"
             "Write ONE sentence describing what data this table contains.\n"
             "Start with 'This table contains'.\n"
             "Do not mention column names. Do not explain yourself.\n\n"
@@ -139,7 +161,11 @@ class LiveSQLManager:
                     must=[qmodels.FieldCondition(
                         key="metadata.source",
                         match=qmodels.MatchValue(value=source_name)
-                    )]
+                    ),
+                    qmodels.FieldCondition(
+                            key="metadata.db_name",
+                            match=qmodels.MatchValue(value=source_name)
+                        )]
                 )
             )
         )
@@ -176,6 +202,7 @@ class LiveSQLManager:
                 "columns": info["columns"],
                 "summary": summary
             }
+            self._save_table_to_qdrant(db_name, table_name, summary)
 
         self._connections[db_name] = {
             "connection_string": connection_string,
@@ -209,7 +236,6 @@ class LiveSQLManager:
         return self.connect(db_name, conn_str)
 
     def check_on_startup(self):
-        """On startup, verify all stored connections are still reachable."""
         for db_name, meta in list(self._connections.items()):
             ok, msg = self.test_connection(meta["connection_string"])
             if ok:
@@ -229,6 +255,20 @@ class LiveSQLManager:
             for db_name, meta in self._connections.items()
         ]
 
+    def _save_table_to_qdrant(self, db_name: str, table_name: str, summary: str):
+        """Pushes an individual table summary into Qdrant."""
+        combined_source = f"{db_name}.{table_name}"
+        
+        self.summary_collection.add_texts(
+            texts=[summary],
+            metadatas=[{
+                "source": combined_source,     
+                "db_name": db_name,          
+                "table_name": table_name,     
+                "file_type": "sql_table"    
+            }]
+        )
+
     # ── Query ────────────────────────────────────────────────────────────────
 
     def get_table_info(self, db_name: str, table_name: str) -> Optional[dict]:
@@ -246,32 +286,73 @@ class LiveSQLManager:
 
     def get_best_table(self, db_name: str, query: str, table_filter: list[str] = None) -> Optional[dict]:
         """Pick the most relevant table for a query using embedding similarity."""
+        from qdrant_client.http import models as qmodels
         if db_name not in self._connections:
             return None
-        tables = self._connections[db_name]["tables"]
-        if not tables:
-            return None
+        must_conditions = [
+            qmodels.FieldCondition(key="metadata.db_name", match=qmodels.MatchValue(value=db_name)),
+            qmodels.FieldCondition(key="metadata.file_type", match=qmodels.MatchValue(value="sql_table"))
+        ]
         if table_filter:
-            tables = {k: v for k, v in tables.items() if k in table_filter}
-            if not tables:
-                return None
-        if len(tables) == 1:
-            table_name = list(tables.keys())[0]
-            return self.get_table_info(db_name, table_name)
-        query_emb = list(self.embedder.embed([query]))[0]
-        best_name, best_score = None, -1.0
-        import numpy as np
-        q = np.array(query_emb)
-        for table_name, meta in tables.items():
-            t = np.array(list(self.embedder.embed([meta["summary"]]))[0])
-            score = float(np.dot(q, t) / (np.linalg.norm(q) * np.linalg.norm(t) + 1e-10))
-            if score > best_score:
-                best_score, best_name = score, table_name
-
-        if best_score < config.SUMMARY_MIN_SCORE:
-            print(f"Best table '{best_name}' score {best_score:.2f} below threshold {config.SUMMARY_MIN_SCORE}")
+            must_conditions.append(
+                qmodels.FieldCondition(key="metadata.table_name", match=qmodels.MatchAny(any=table_filter))
+            )
+        search_filter = qmodels.Filter(must=must_conditions)
+        search_results = self.summary_collection.similarity_search_with_score(
+            query, 
+            k=5, 
+            filter=search_filter
+        )
+        if not search_results:
+            print(f"No matching tables found in Qdrant for database '{db_name}'.")
             return None
-        return self.get_table_info(db_name, best_name)
+        all_tables = [
+            (doc.metadata.get("table_name"), score)
+            for doc, score in search_results
+        ]
+        for name, score in all_tables:
+            print(f"SQL Table candidate score: '{db_name}.{name}' = {score:.3f} (min={config.SUMMARY_MIN_SCORE})")
+        kept_tables = filter_by_score(
+            all_tables, 
+            min_score=config.SUMMARY_MIN_SCORE, 
+            gap=config.SUMMARY_SCORE_GAP, 
+            label="SQL Table"
+        )
+        # tables = self._connections[db_name]["tables"]
+        # if not tables:
+        #     return None
+        # if table_filter:
+        #     tables = {k: v for k, v in tables.items() if k in table_filter}
+        #     if not tables:
+        #         return None
+        # if len(tables) == 1:
+        #     table_name = list(tables.keys())[0]
+        #     return self.get_table_info(db_name, table_name)
+        # query_emb = list(self.embedder.embed([query]))[0]
+        # best_name, best_score = None, -1.0
+        # import numpy as np
+        # q = np.array(query_emb)
+        # for table_name, meta in tables.items():
+        #     t = np.array(list(self.embedder.embed([meta["summary"]]))[0])
+        #     score = float(np.dot(q, t) / (np.linalg.norm(q) * np.linalg.norm(t) + 1e-10))
+        #     if score > best_score:
+        #         best_score, best_name = score, table_name
+        if len(kept_tables) > 1:
+            top_score = max(s for name, s in all_tables if name in kept_tables)
+            if top_score >= 0.5:
+                # If there's a clear massive winner, isolate it unless the gap is tiny
+                kept_tables = [name for name, s in all_tables if s == top_score]
+                print(f"Dominant SQL Table (score={top_score:.3f}), keeping only: {kept_tables}")
+        if not kept_tables:
+            print(f"No tables passed score thresholds for query on database '{db_name}'.")
+            return []
+        results = []
+        for table_name in kept_tables:
+            table_info = self.get_table_info(db_name, table_name)
+            if table_info:
+                results.append(table_info)
+                
+        return results
 
     def generate_and_execute_sql(self, query: str, table_info: dict, db_name: str):
         dialect = self._connections[db_name]["dialect"]

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from rag_system import RAGsystem
 from document_manager import DocumentManager
 from retrieval import Retrieval, filter_by_score
-from rag_pipe_line import RAGPipeline
+from rag_pipe_line import CSVPipeline
 from live_sql_manager import LiveSQLManager
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class RAGExecutor:
         self.doc_manager = DocumentManager(self.rag)
         self.retriever = Retrieval(self.collection, self.summary_collection)
         self.llm = self.rag.llm
-        self.csv_pipeline = RAGPipeline(
+        self.csv_pipeline = CSVPipeline(
             llm=self.rag.llm,
             embedder=self.rag.embedder,
             db=self.doc_manager.csv_db
@@ -172,13 +172,11 @@ class RAGExecutor:
     def _ask_live_sql(self, query: str, db_name: str, table_name: str = None, table_filter: list[str] = None) -> tuple:
         if table_name:
             table_info = self.sql_manager.get_table_info(db_name, table_name)
-            if not table_info:
-                return f"Table '{table_name}' not found in '{db_name}'.", None, [], None
         else:
-            table_info = self.sql_manager.get_best_table(db_name, query, table_filter)
-            if not table_info:
-                return f"No tables found in '{db_name}'.", None, [], None
- 
+            tables = self.sql_manager.get_best_table(db_name, query)
+            table_info = tables[0] if tables else None
+        if not table_info:
+            return "I couldn't find a relevant table.", None, None, None
         df, sql_used = self.sql_manager.generate_and_execute_sql(query, table_info, db_name)
         print(f"Live SQL used: {sql_used}")
  
@@ -304,7 +302,15 @@ class RAGExecutor:
                     print(f"MAP csv '{entry['source']}': {len(answer)} chars")
                 if table:
                     all_tables.append(table)
- 
+            elif entry["file_type"] == "sql_table":
+                # entry['source'] is expected to be 'db_name.table_name'
+                db_name, table_name = entry["source"].split(".", 1)
+                answer, table, _, sql = self._ask_live_sql(query, db_name, table_name=table_name)
+                if answer and "couldn't find" not in answer.lower():
+                    sub_answers.append((entry["source"], answer))
+                    print(f"MAP sql_table '{entry['source']}': {len(answer)} chars")
+                if table:
+                    all_tables.append(table)
         if not sub_answers:
             return "I couldn't find any relevant information.", None, pdf_sources_structured, all_sqls[0] if all_sqls else None
  

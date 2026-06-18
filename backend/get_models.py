@@ -9,6 +9,7 @@ class AIProvider:
     def generate_description(self, table_name, snippet_str):
         prompt = (
             "### Task\n"
+            f"The table name is '{table_name}'.\n"
             "Write ONE sentence describing what data this table contains.\n"
             "Start with 'This table contains'.\n"
             "Do not mention column names. Do not explain yourself.\n\n"
