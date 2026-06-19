@@ -36,7 +36,7 @@ def filter_by_score(
     for src, s in dropped:
         print(f"Dropping {label} '{src}' — score {s:.3f} too far behind top {best:.3f}")
     return kept
-class LiveSQLManager:
+class LiveSQLPipeline:
     
     def __init__(self, embedder, llm, summary_collection):
         self.embedder = embedder

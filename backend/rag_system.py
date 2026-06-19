@@ -8,7 +8,7 @@ from llama_cpp import Llama
 from fastembed import TextEmbedding
 
 
-class RAGsystem:
+class RAGSystem:
     def __init__(self, collection_name=config.CHILD_COLLECTION):
         self.collection_name = collection_name
         self.summary_collection_name = "document_summaries"

@@ -10,16 +10,16 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from rag_system import RAGsystem
+from rag_system import RAGSystem
 from document_manager import DocumentManager
 from retrieval import Retrieval, filter_by_score
 from rag_pipe_line import CSVPipeline
-from live_sql_manager import LiveSQLManager
+from live_sql_manager import LiveSQLPipeline
 
 logger = logging.getLogger(__name__)
 class RAGExecutor:
     def __init__(self):
-        self.rag = RAGsystem()
+        self.rag = RAGSystem()
         self.rag.initialize()
 
         self.collection = self.rag.vector_db.get_collection(self.rag.collection_name)
@@ -32,7 +32,7 @@ class RAGExecutor:
             embedder=self.rag.embedder,
             db=self.doc_manager.csv_db
         )
-        self.sql_manager = LiveSQLManager(
+        self.sql_manager = LiveSQLPipeline(
             embedder=self.rag.embedder,
             llm=self.rag.llm,
             summary_collection=self.summary_collection

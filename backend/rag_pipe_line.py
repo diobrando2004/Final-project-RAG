@@ -284,7 +284,10 @@ class CSVPipeline:
         for match in re.findall(r'"([^"]*)"', clean_sql):
             if match != table_name and match not in col_names:
                 clean_sql = clean_sql.replace(f'"{match}"', f"'{match}'")
-
+        if f'"{table_name}"' not in clean_sql and table_name not in clean_sql:
+            err_msg = f"Error: LLM generated SQL for wrong table."
+            print(err_msg)
+            return None, err_msg
         print(f"Executing SQL: {clean_sql}")
         try:
             result_df = self.db.execute(clean_sql).df()
