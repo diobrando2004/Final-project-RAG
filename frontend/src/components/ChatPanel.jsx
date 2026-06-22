@@ -102,7 +102,27 @@ export default function ChatPanel({ messages, thinking, selectedSources, onSend 
             <div className="message-role">
               {msg.role === "user" ? "You" : "Assistant"}
             </div>
-            <div className="message-bubble">{msg.content}</div>
+            <div className="message-bubble">
+              <div>{msg.content}</div>
+
+              {msg.role === "assistant" && msg.sources?.length > 0 && (
+                <details className="message-sources">
+                  <summary>Sources ({msg.sources.length})</summary>
+
+                  {msg.sources.map((src, i) => (
+                    <details key={i} className="message-source-doc">
+                      <summary>{src.name}</summary>
+
+                      {(src.chunks || []).map((chunk, j) => (
+                        <pre key={j} className="message-source-chunk">
+                          {chunk}
+                        </pre>
+                      ))}
+                    </details>
+                  ))}
+                </details>
+              )}
+            </div>
             {msg.role === "assistant" && msg.table && (
               <DataTable rows={msg.table} />
             )}

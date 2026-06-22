@@ -673,3 +673,39 @@ html, body, #root {
   padding: 0 4px;
   margin-top: 2px;
 }
+.message-sources {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  font-family: var(--font-sans);
+}
+
+.message-sources summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.message-source-doc {
+  margin-top: 6px;
+}
+
+.message-source-doc summary {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.message-source-chunk {
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11px;
+  max-height: 180px;
+  overflow-y: auto;
+}
