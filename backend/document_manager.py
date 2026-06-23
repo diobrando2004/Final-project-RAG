@@ -8,7 +8,7 @@ import sqlite3
 from database import DataManager
 from indexer import SemanticIndexer
 import sqlite3
-
+from get_models import AIProvider
 logger = logging.getLogger(__name__)
 
  
@@ -17,9 +17,11 @@ CSV_EXTENSIONS = {".csv", ".xlsx", ".xls", ".db", ".sqlite"}
 class DocumentManager:
     def __init__(self,rag_system):
         self.rag_system = rag_system
+        self.embedder = rag_system.embedder
+        self.llm = rag_system.llm
         self.md_dir = Path(config.MARKDOWN_DIR)
         self.md_dir.mkdir(parents=True, exist_ok=True)
-
+        self.ai = AIProvider(self.llm, self.embedder)
         
         self.csv_db = DataManager(config.CSV_DB_PATH, config.CSV_METADATA_DIR)
         self.csv_indexer = SemanticIndexer(
@@ -48,43 +50,7 @@ class DocumentManager:
             except Exception:
                 self.csv_db.execute("INSTALL spatial; LOAD spatial;")
             self._spatial_loaded = True
-    def clean_text_for_summary(self, text: str) -> str:
-        text = re.sub(r'\.\s*\.\s*\.', '', text)
-        text = re.sub(r'^\s*\d+\s*$', '', text, flags=re.MULTILINE)
-        return text[500:4500].strip() if len(text) > 1000 else text.strip()
     
-    def _generate_pdf_summary(self, text: str) -> str:
-        self.rag_system.llm.reset()
-        cleaned_sample = self.clean_text_for_summary(text)
-        prompt = (
-            "### TASK: You are a document classifier. "
-            "Identify the main subject of the text below.\n"
-            "### RULES:\n"
-            "1. Ignore all navigation menus, page numbers, and table of contents.\n"
-            "2. Do not repeat the text.\n"
-            "3. Answer in one direct sentence starting with 'This document covers...'\n\n"
-            f"### INPUT TEXT:\n{cleaned_sample}\n### END OF INPUT\n\n"
-            "### SUMMARY:\nThis document covers"
-        )
-        output = self.rag_system.llm(prompt, max_tokens=80, temperature=0.2)
-        summary = output['choices'][0]['text'].strip()
-        return "This document covers " + summary
-
-    def _generate_csv_summary(self, table_name: str, snippet_str: str) -> str:
-        self.rag_system.llm.reset()
-        prompt = (
-            "### Task\n"
-            "Write ONE sentence describing what data this table contains.\n"
-            "Start with 'This table contains'.\n"
-            "Do not mention column names. Do not explain yourself.\n\n"
-            f"### Sample data\n{snippet_str}\n\n"
-            "### Description\nThis table contains"
-        )
-        output = self.rag_system.llm(
-            prompt, max_tokens=80, temperature=0.1, stop=["\n", "<|im_end|>"]
-        )
-        summary = output['choices'][0]['text'].strip()
-        return "This table contains " + summary
 
     def _save_to_qdrant_summary(self, source_name: str, summary: str, file_type: str):
         
@@ -161,7 +127,7 @@ class DocumentManager:
         with open(md_path, 'r', encoding='utf-8') as f:
             full_content = f.read()
  
-        doc_summary = self._generate_pdf_summary(full_content)
+        doc_summary = self.ai.generate_description_pdf(full_content)
  
         self.rag_system.parent_store.save_document_summary(
             source_name=doc_name,
@@ -232,7 +198,7 @@ class DocumentManager:
             snippet_str = self.csv_db.execute(
                 f'SELECT * FROM "{table_name}" LIMIT 5'
             ).df().to_string(index=False)
-            summary = self._generate_csv_summary(table_name, snippet_str)
+            summary = self.ai.generate_description(table_name, snippet_str)
  
             vector = list(next(self.rag_system.embedder.embed([summary])))
             self.csv_db.execute(
